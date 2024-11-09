@@ -21,7 +21,7 @@ struct PostView: View {
         ScrollView {
             VStack(spacing: 20) {
                 Button(action: {
-                    isShowingImagePicker = true
+                    isShowingImagePicker.toggle()
                 }) {
                     VStack {
                         if let image = image {
@@ -58,7 +58,6 @@ struct PostView: View {
                 PostItemCardView(title: "description", descriptionText: $description)
                 
                 PostItemCardView(title: "Additional Note", descriptionText: $additionalNote)
-                
                 
                 Button {
                     
