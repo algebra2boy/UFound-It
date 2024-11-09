@@ -18,6 +18,8 @@ struct BuildingDetailView: View {
 
     @Binding var present: Bool
 
+    @Binding var detent: PresentationDetent
+
     let data = (1...2).map { "Item \($0)" }
 
     var body: some View {
@@ -84,7 +86,11 @@ struct BuildingDetailView: View {
                             PostView()
                         } label: {
                             Image(systemName: "plus")
+                                .onTapGesture {
+                                    detent = .large
+                                }
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -131,7 +137,7 @@ struct BuildingDetailView: View {
                     .frame(maxWidth: .infinity)
             } placeholder: {
                 ProgressView()
-                    .frame(maxWidth: .infinity) // Ensure the progress view spans the full width
+                    .frame(maxWidth: .infinity, maxHeight: 200)
             }
         } else {
             Image(systemName: "photo")
@@ -148,7 +154,9 @@ struct BuildingDetailView: View {
 
     @Previewable @State var present: Bool = false
 
-    BuildingDetailView(present: $present)
+    @Previewable @State var detent: PresentationDetent = .large
+
+    BuildingDetailView(present: $present, detent: $detent)
 }
 
 
