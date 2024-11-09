@@ -15,41 +15,43 @@ struct LoginView: View {
         [username, password].contains(where: \.isEmpty)
     }
     var body: some View {
-        ZStack {
-            
-            Color.gray.opacity(0.15)
-            
-            VStack {
+        NavigationStack {
+            ZStack {
                 
-                Spacer()
-                AuthHeaderView()
-                    .padding()
+                Color.gray.opacity(0.15)
                 
-                UserNamePasswordView(
-                    username: $username,
-                    password: $password,
-                    isSignInButton: $isSigningInView)
-                
-                .frame(width: 350)
-                HStack {
-                    Text("Don't have an account? ")
-                        .bold()
-                    NavigationLink(destination: SignUpView()) {
-                        Text("Sign up")
-                            .underline()
-                            .foregroundColor(.blue)
+                VStack {
+                    
+                    AuthHeaderView()
+                    
+                    UserNamePasswordView(
+                        username: $username,
+                        password: $password,
+                        isSignInButton: $isSigningInView)
+                    .frame(width: 350)
+                    
+                    HStack {
+                        Text("Don't have an account? ")
+                            .bold()
+                        
+                        NavigationLink {
+                            SignUpView()
+                        } label: {
+                            Text("Sign up")
+                                .underline()
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
-                Spacer()
+                .padding(.top, 20)
                 
-                Spacer()
             }
-            
+            .ignoresSafeArea()
+            .navigationBarBackButtonHidden()
         }
-        .ignoresSafeArea()
 
     }
-    
+
 }
 
 #Preview {
