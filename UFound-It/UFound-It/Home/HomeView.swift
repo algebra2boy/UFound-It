@@ -15,6 +15,8 @@ struct HomeView: View {
         span: .init(latitudeDelta: 0.01, longitudeDelta: 0.01)
     ))
 
+    @State private var currentDetent: PresentationDetent = .fraction(0.465)
+
     let coordinates: [CLLocationCoordinate2D] = [.ILC, .ISB, .Franklin]
 
     @State private var presentBottomSheet: Bool = true
@@ -39,9 +41,10 @@ struct HomeView: View {
 
         }
         .sheet(isPresented: $presentBottomSheet) {
-            BuildingDetailView(present: $presentBottomSheet)
-                .presentationDetents([.fraction(0.465), .fraction(0.7), .fraction(0.95)])
+            BuildingDetailView(present: $presentBottomSheet, detent: $currentDetent)
+                .presentationDetents([.fraction(0.465), .fraction(0.7), .large], selection: $currentDetent)
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
     }
 }

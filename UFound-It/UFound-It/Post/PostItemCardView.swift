@@ -14,7 +14,6 @@ struct PostItemCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .firstTextBaseline, spacing: 9) {
-                // Title
                 Text(title)
                     .kerning(1.0)
                     .font(.title2)

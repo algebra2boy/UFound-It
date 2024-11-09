@@ -8,45 +8,49 @@
 import SwiftUI
 
 struct BuildingDetailView: View {
-
+    
     @State private var searchText: String = ""
-
+    
     @State private var columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-
+    
+    @State private var navigateToPostView = false
+    
     @Binding var present: Bool
-
+    
+    @Binding var detent: PresentationDetent
+    
     let data = (1...2).map { "Item \($0)" }
-
+    
     var body: some View {
         NavigationStack {
-
+            
             VStack {
-
+                
                 ScrollView {
-
+                    
                     LazyVGrid(columns: columns, spacing: 20) {
-
+                        
                         ForEach(data, id: \.self) { item in
-
+                            
                             GeometryReader { geometry in
                                 VStack(alignment: .leading, spacing: 10) {
-
+                                    
                                     asyncImage(url: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglLaLDQjsbMAYFLzkE38lL3JCIRFL0yr71tgUhao6lbIEnn-0qX2ycC15DerAKRc_G_D1sDDa67A1Oc-JogX09WQA6XxjLsg2sDLcLWexjKOdkX8HnUAVy4hyphenhyphen3bKMrN4UEdsE4SO4Yj5Wz/s5046/Dederick+7-01-01.JPG")
                                         .clipped()
-
+                                    
                                     // Text Section
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text("\(item)")
                                             .font(.system(size: 18, weight: .medium))
-
+                                        
                                         Text("Posted @ 5:00pm")
                                             .font(.system(size: 16, weight: .light))
                                     }
                                     .padding([.horizontal, .bottom], 10)
-
+                                    
                                 }
                                 .background(Color.white)
                                 .cornerRadius(15)
@@ -61,13 +65,13 @@ struct BuildingDetailView: View {
                     .padding()
                 }
             }
-
+            
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("Franklin Dining Hall")
             .navigationBarTitleDisplayMode(.inline)
             .presentationDragIndicator(.visible)
             .toolbar {
-
+                
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         present.toggle()
@@ -75,27 +79,30 @@ struct BuildingDetailView: View {
                         Image(systemName: "xmark")
                     }
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
                         sortMenu
-
-                        NavigationLink {
-                            PostView()
+                        
+                        Button {
+                            navigate()
                         } label: {
                             Image(systemName: "plus")
                         }
                     }
                 }
             }
+            .navigationDestination(isPresented: $navigateToPostView, destination: {
+                PostView()
+            })
         }
     }
-
+    
     var sortMenu: some View {
         Menu {
-
+            
             Button {
-
+                
             } label: {
                 HStack {
                     Text("A-Z")
@@ -103,15 +110,15 @@ struct BuildingDetailView: View {
                     Image(systemName: "character")
                 }
             }
-
+            
             Button {
-
+                
             } label: {
                 Text("Latest")
             }
-
+            
             Button {
-
+                
             } label: {
                 Text("Oldest")
             }
@@ -119,8 +126,8 @@ struct BuildingDetailView: View {
             Image(systemName: "arrow.up.arrow.down")
         }
     }
-
-
+    
+    
     @ViewBuilder
     func asyncImage(url: String) -> some View {
         if let url = URL(string: url) {
@@ -131,7 +138,7 @@ struct BuildingDetailView: View {
                     .frame(maxWidth: .infinity)
             } placeholder: {
                 ProgressView()
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: 200)
             }
         } else {
             Image(systemName: "photo")
@@ -140,15 +147,23 @@ struct BuildingDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: 200)
         }
     }
-
-
+    
+    private func navigate() {
+        detent = .large
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            navigateToPostView = true
+        }
+    }
 }
 
 #Preview {
-
+    
     @Previewable @State var present: Bool = false
-
-    BuildingDetailView(present: $present)
+    
+    @Previewable @State var detent: PresentationDetent = .large
+    
+    BuildingDetailView(present: $present, detent: $detent)
 }
 
 
