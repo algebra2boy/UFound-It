@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ItemView: View {
+
     @State private var showingAlert = false
     @State private var name = ""
-    
-    
-    
-    
+
     var body: some View {
         
         NavigationStack {
