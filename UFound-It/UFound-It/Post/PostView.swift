@@ -11,9 +11,9 @@ import PhotosUI
 
 struct PostView: View {
 
-    @State private var postViewModel: PostViewModel = .init()
+    @State private var ItemName = ""
+    @State private var description = ""
 
-    @State private var itemName = ""
     @State private var additionalNote = ""
 
     @State private var pickerItem: PhotosPickerItem?
@@ -44,8 +44,10 @@ struct PostView: View {
                                         .frame(height: 100)
                                         .clipped()
                                         .cornerRadius(34)
+                                        .foregroundStyle(Color.UmassRed)
                                         .padding()
                                     Text("Select a picture")
+                                        .foregroundStyle(Color.UmassRed)
                                 }
                             }
                         }
@@ -56,7 +58,10 @@ struct PostView: View {
                         selectPhoto()
                     }
 
-                    PostItemCardView(title: "Name Of Item", descriptionText: $itemName)
+                    PostItemCardView(title: "Name of item", descriptionText: $ItemName)
+                    
+                    PostItemCardView(title: "Description", descriptionText: $description)
+
 
                     PostItemCardView(title: "Note (optional)", descriptionText: $additionalNote)
 
@@ -68,6 +73,7 @@ struct PostView: View {
                     }
                     .padding(.horizontal, 12)
                     .buttonStyle(.borderedProminent)
+                    .tint(.UmassRed)
                 }
             }
 
