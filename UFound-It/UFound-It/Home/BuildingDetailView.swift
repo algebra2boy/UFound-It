@@ -53,7 +53,7 @@ struct BuildingDetailView: View {
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 }
                             }
-                            .frame(height: 200) // Fixed height for each grid item
+                            .frame(height: 200)
                         }
                     }
                     .padding()
@@ -62,8 +62,6 @@ struct BuildingDetailView: View {
 
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("Franklin Dining Hall")
-            .navigationBarTitleDisplayMode(.inline)
-            .presentationDetents([.fraction(0.4)])
             .presentationDragIndicator(.visible)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
