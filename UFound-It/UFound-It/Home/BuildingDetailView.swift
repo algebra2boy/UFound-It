@@ -131,12 +131,12 @@ struct BuildingDetailView: View {
                     .frame(maxWidth: .infinity)
             } placeholder: {
                 ProgressView()
-                    .frame(maxWidth: .infinity) // Ensure the progress view spans the full width
+                    .frame(maxWidth: .infinity)
             }
         } else {
             Image(systemName: "photo")
                 .resizable()
-                .scaledToFit() // Scale the default image to fit inside the container
+                .scaledToFit()
                 .frame(maxWidth: .infinity, maxHeight: 200)
         }
     }
