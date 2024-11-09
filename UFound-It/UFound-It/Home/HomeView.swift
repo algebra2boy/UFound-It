@@ -17,7 +17,7 @@ struct HomeView: View {
 
     let coordinates: [CLLocationCoordinate2D] = [.ILC, .ISB, .Franklin]
 
-    @State private var presentBottomSheet: Bool = false
+    @State private var presentBottomSheet: Bool = true
 
     var body: some View {
         Map(position: $cameraPosition) {
@@ -39,7 +39,7 @@ struct HomeView: View {
 
         }
         .sheet(isPresented: $presentBottomSheet) {
-            Text("Hello, World!")
+            BuildingDetailView()
                 .presentationDetents([.fraction(0.4)])
                 .presentationDragIndicator(.visible)
         }
