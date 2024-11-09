@@ -36,3 +36,23 @@ exports.add = async (req, res) => {
     res.status(400).json({ status: "fail", message: err.message });
   }
 };
+
+exports.list = async (req, res) => {
+  try {
+    const database = getDatabase();
+    const locations = database.collection("Locations");
+
+    const locationDocuments = await locations.find({}).toArray();
+    res.status(201).json({
+      locations: locationDocuments.map((locationDoc) => ({
+        location: locationDoc.location,
+        lat: locationDoc.lat,
+        long: locationDoc.long
+      })),
+      status: "success",
+    });
+
+  } catch (err) {
+    res.status(400).json({ status: "fail", message: err.message });
+  }
+}
