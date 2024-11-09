@@ -48,6 +48,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                     .cornerRadius(15.0)
             }
             Button {
+                // TODO: Button ACTION
                 print("do login action")
             } label: {
                 (isSignInButton ? Text("Sign In") : Text("Log In")) // Corrected syntax
@@ -58,9 +59,11 @@ struct UserNamePasswordView: View { // Corrected struct name
             .frame(height: 50)
             .frame(maxWidth: .infinity)
             .background(
-                isSignInButtonDisabled ?
-                LinearGradient(colors: [.gray], startPoint: .topLeading, endPoint: .bottomTrailing) :
-                    LinearGradient(colors: [.red], startPoint: .topLeading, endPoint: .bottomTrailing)
+                LinearGradient(
+                    colors: isSignInButtonDisabled ? [.gray] : [Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255), Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
             .cornerRadius(20)
             .disabled(isSignInButtonDisabled)
@@ -73,7 +76,7 @@ struct UserNamePasswordView: View { // Corrected struct name
 #Preview {
 //    @Previewable @State var descriptionText: String = ""
     @Previewable @State var isSignInButton: Bool = false
-    @Previewable @State var username: String = ""
-    @Previewable @State var password: String = ""
+    @Previewable @State var username: String = "ss"
+    @Previewable @State var password: String = "sss"
     UserNamePasswordView(username: $username, password: $password, isSignInButton: $isSignInButton)
 }

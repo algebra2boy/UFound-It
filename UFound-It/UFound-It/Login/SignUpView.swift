@@ -12,7 +12,8 @@ struct SignUpView: View {
     @State private var username: String = ""
 
     @State private var password: String = ""
-
+    @State private var backgroundImg: String = "background-umass2"
+    
     @State private var isSigningInView: Bool = true
 
     var body: some View {
@@ -23,7 +24,13 @@ struct SignUpView: View {
 
                 VStack {
 
-                    AuthHeaderView()
+                    AuthHeaderView(backgroundImg: $backgroundImg)
+                        .padding()
+                    
+                    Text("Sign in")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
 
                     UserNamePasswordView(
                         username: $username,
@@ -40,11 +47,10 @@ struct SignUpView: View {
                         } label: {
                             Text("Login")
                                 .underline()
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
                         }
                     }
                 }
-                .padding(.top, 20)
             }
             .ignoresSafeArea()
             .navigationBarBackButtonHidden()

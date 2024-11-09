@@ -24,6 +24,10 @@ struct BuildingDetailView: View {
     
     let data = (1...2).map { "Item \($0)" }
     
+    @State private var navigateToItemView: Bool = false
+    
+    //@State private var selectedItem:
+    
     var body: some View {
         NavigationStack {
             
@@ -58,6 +62,10 @@ struct BuildingDetailView: View {
                                     RoundedRectangle(cornerRadius: 15)
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 }
+                                .onTapGesture {
+                                    //selectedItem = item
+                                    navigateToItemView.toggle()
+                                }
                             }
                             .frame(height: 200)
                         }
@@ -65,6 +73,10 @@ struct BuildingDetailView: View {
                     .padding()
                 }
             }
+            
+            .navigationDestination(isPresented: $navigateToItemView, destination: {
+                ItemView()
+            })
             
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("Franklin Dining Hall")
