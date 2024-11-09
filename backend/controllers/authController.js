@@ -1,43 +1,71 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
 dotenv.config();
 
-exports.signup = async (req, res) => {
-    const {email, password} = req.body;
-    try {
-        // Check if email already exists
-        if (await User.findOne({email})) {
-            return res.status(400).json({status: 'fail', message: 'Email already exists'});
-        }
+const { getDatabase } = require("../config/mongoDB");
 
-        const user = await User.create({email, password});
-        res.status(201).json({
-            email: user.email,
-            status: 'success',
-            message: 'Account created. Please verify your email.',
-        });
-    } catch (err) {
-        res.status(400).json({status: 'fail', message: err.message});
+exports.signup = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const database = getDatabase(); // Retrieve the database instance
+    const usersCollection = database.collection("Users");
+
+    // Check if email already exists
+    const existingUser = await usersCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ status: "fail", message: "Email already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = {
+      email,
+      password: hashedPassword, // Make sure to hash the password in a real application
+    };
+    await usersCollection.insertOne(newUser);
+
+    res.status(201).json({
+      email: newUser.email,
+      status: "success",
+      message: "Account created. Please verify your email.",
+    });
+  } catch (err) {
+    res.status(400).json({ status: "fail", message: err.message });
+  }
 };
 
 exports.login = async (req, res) => {
-    const {email, password} = req.body;
-    try {
-        const user = await User.findOne({email});
-        if (!user || !(await user.comparePassword(password))) {
-            return res.status(401).json({status: 'fail', message: 'Invalid email or password'});
-        }
+  const { email, password } = req.body;
 
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+  try {
+    const database = getDatabase();
+    const usersCollection = database.collection("Users"); // Using the "User" collection
 
-        res.status(200).json({
-            email: user.email,
-            token,
-            status: 'success',
-        });
-    } catch (err) {
-        res.status(500).json({status: 'fail', message: err.message});
+    // Check if the user exists
+    const user = await usersCollection.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ status: "fail", message: "Invalid email or password" });
     }
+
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ status: "fail", message: "Invalid email or password" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.status(200).json({
+      email: user.email,
+      token,
+      status: "success",
+    });
+  } catch (err) {
+    res.status(500).json({ status: "fail", message: err.message });
+  }
 };

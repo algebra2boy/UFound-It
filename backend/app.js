@@ -1,33 +1,40 @@
-const express = require('express');
-const app = express();
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth');
-const itemRoutes = require('./routes/items');
-const cors = require('cors');
-const {initWebSocketServer} = require('./utils/websocket');
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const authRoutes = require("./routes/auth");
+const itemRoutes = require("./routes/items");
+const { connect } = require("./config/mongoDB"); // Only importing `connect` to initialize MongoDB connection
+const { initWebSocketServer } = require("./utils/websocket");
+
 dotenv.config();
+
+const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use('/uploads', express.static('uploads')); // Serve uploaded images
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/items', itemRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/items", itemRoutes);
 
 // MongoDB Connection
-mongoose
-    .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(() => console.log('MongoDB connected'))
-    .catch((err) => console.log(err));
+async function initializeMongoDB() {
+  try {
+    await connect(); // Establish MongoDB connection on server startup
+    console.log("MongoDB connection initialized.");
+  } catch (error) {
+    console.error("Error initializing MongoDB connection:", error);
+    process.exit(1); // Exit if MongoDB connection fails
+  }
+}
+
+initializeMongoDB();
 
 // Start Server
-const server = app.listen(process.env.PORT || 3000, () =>
-    console.log(`Server running on port ${process.env.PORT || 3000}`)
-);
+const server = app.listen(process.env.PORT || 3000, () => console.log(`Server running on port ${process.env.PORT || 3000}`));
 
 // Initialize WebSocket Server
 initWebSocketServer(server);
