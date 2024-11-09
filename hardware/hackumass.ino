@@ -1,25 +1,18 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
 #include <WebSocketsClient.h>
+#include "config.h"
 
-const char* clientId = "dropbox_number_one";
-
-const char* ssid = "englishorspanish";
-const char* password = "ifyoumoveyougae2024";
-const char* webSocketServer = "10.0.0.41";  // Example: "192.168.1.100"
-const int webSocketPort = 3000;  // Same as the Express server port
-
-const int ledPin = 2;  // GPIO pin connected to the LED
+const int ledPin = 2;
 #define SERVO1 23
 
 WebSocketsClient webSocket;
-Servo myservo;  // create servo object
+Servo myservo;
 
 void setup() {
     Serial.begin(115200);
-    pinMode(ledPin, OUTPUT);  // Set LED pin as output
+    pinMode(ledPin, OUTPUT);
 
-    // Connect to WiFi
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
@@ -27,21 +20,18 @@ void setup() {
     }
     Serial.println("Connected to WiFi");
 
-    // Initialize WebSocket
     webSocket.begin(webSocketServer, webSocketPort, "/");
-
-    // Define WebSocket event handler
     webSocket.onEvent(webSocketEvent);
     Serial.println("WebSocket setup complete");
 
-    myservo.attach(SERVO1);  // attaches servo on pin 23
+    myservo.attach(SERVO1);
     Serial.println("Servo Attached");
-    myservo.write(0); // reset the servo position
+    myservo.write(0);
     Serial.println("Servo Position Resetted");
 }
 
 void loop() {
-    webSocket.loop();  // Keep WebSocket connection alive
+    webSocket.loop();
 }
 
 // WebSocket event handling function
@@ -53,7 +43,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
             break;
         case WStype_CONNECTED:
             Serial.println("WebSocket Connected");
-            webSocket.sendTXT("Hello from ESP32");  // first message must contain esp32 to identify ws connection type
+            webSocket.sendTXT("Hello from ESP32");
             digitalWrite(ledPin, LOW);
             Serial.println(String("Sending client id: ") + clientId);
             webSocket.sendTXT(String("clientId:") + clientId);
@@ -61,10 +51,10 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         case WStype_TEXT:
             Serial.printf("Received command: %s\n", payload);
             if (strcmp((char*)payload, "unlock") == 0) {
-                digitalWrite(ledPin, LOW);  // Turn LED off
+                digitalWrite(ledPin, LOW);
                 myservo.write(120);
             } else if (strcmp((char*)payload, "lock") == 0) {
-                digitalWrite(ledPin, HIGH);   // Turn LED on
+                digitalWrite(ledPin, HIGH);
                 myservo.write(0);
             }
             break;
