@@ -5,10 +5,10 @@ let wss = null;
 const esp32Clients = new Map();
 const frontendClients = new Set();
 
-function init(express_app) {
+function initWebSocketServer(express_app) {
     // Create an HTTP server and attach the WebSocket server to it
     const server = http.createServer(express_app);
-    wss = new WebSocket.Server({ server });
+    wss = new WebSocket.Server({server});
 
     wss.on('connection', (ws) => {
         let clientId = null;
@@ -36,11 +36,11 @@ function init(express_app) {
                 }
             }
             if (clientType == 'esp32' && msg.includes("clientId")) {
-                    clientId = msg.split(":")[1];
-                    esp32Clients.set(clientId, ws);
-                    console.log("ESP32 Client ID:", clientId);
-                    // Default to unlock the box (comment out in production)
-                    ws.send("unlock");
+                clientId = msg.split(":")[1];
+                esp32Clients.set(clientId, ws);
+                console.log("ESP32 Client ID:", clientId);
+                // Default to unlock the box (comment out in production)
+                ws.send("unlock");
             }
         });
 
@@ -98,7 +98,7 @@ function unlockBox(clientId) {
     }
 }
 
-module.exports = { initWebSocketServer, unlockAllBox, lockAllBox, lockBox, unlockBox };
+module.exports = {initWebSocketServer, unlockAllBox, lockAllBox, lockBox, unlockBox};
 
 // Usage notes:
 // - Call `init(express_app)` with the express app to initialize the WebSocket server.
