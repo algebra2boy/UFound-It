@@ -1,28 +1,56 @@
-const multer = require("multer");
-const { v4: uuidv4 } = require("uuid");
+const AWS = require('aws-sdk');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+const { getDatabase } = require('../config/mongoDB');
 
-const { getDatabase } = require("../config/mongoDB");
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Make sure this directory exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, uuidv4() + "-" + file.originalname);
-  },
+// AWS configuration using environment variables
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
+
+const s3 = new AWS.S3();
+
+// Configure multer to store files in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-exports.uploadImage = upload.single("image");
+exports.uploadImage = upload.single('image');
 
 exports.addItem = async (req, res) => {
-  const { name, description, location, boxId, email, userName, additionalNote } = req.body;
-  const imageUrl = req.file ? req.file.path : null;
+  const {
+    name,
+    description,
+    location,
+    boxId,
+    email,
+    userName,
+    additionalNote,
+  } = req.body;
 
   try {
     const database = getDatabase();
-    const locations = database.collection("Locations");
+    const locations = database.collection('Locations');
+
+    // Check if an image is provided
+    let imageUrl = null;
+    if (req.file) {
+      // Generate a unique filename
+      const imageName = uuidv4() + '-' + req.file.originalname;
+
+      // Prepare the params for S3 upload
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME, // Your bucket name
+        Key: imageName,                     // File name you want to save as in S3
+        Body: req.file.buffer,              // File buffer from multer
+        ContentType: req.file.mimetype
+      };
+
+      // Uploading files to the bucket
+      const uploadResult = await s3.upload(params).promise();
+      imageUrl = uploadResult.Location; // The URL of the uploaded image
+    }
 
     const item = {
       itemId: uuidv4(),
@@ -38,34 +66,37 @@ exports.addItem = async (req, res) => {
       isPickedUp: false,
     };
 
+    console.log(req.body)
+
     const result = await locations.updateOne(
-      { location: location, "boxes.boxId": parseInt(boxId) },
-      {
-        $set: {
-          "boxes.$[box].item": item,
-          "boxes.$[box].containItem": true,
+        { location: location, 'boxes.boxId': parseInt(boxId) },
+        {
+          $set: {
+            'boxes.$[box].item': item,
+            'boxes.$[box].containItem': true,
+          },
         },
-      },
-      {
-        arrayFilters: [{ "box.boxId": parseInt(boxId) }],
-      }
+        {
+          arrayFilters: [{ 'box.boxId': parseInt(boxId) }],
+        }
     );
 
-    if (result) {
-      res.status(201).json({
-        itemId: item.itemId,
-        status: "success",
-        message: `Item added to box ${boxId} at location ${location}`,
-      });
-    } else {
-      res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
+    if (result.matchedCount === 0) {
+      return res.status(400).json({ status: 'fail', message: 'Invalid location or boxId' });
     }
+
+    res.status(201).json({
+      itemId: item.itemId,
+      status: 'success',
+      message: `Item added to box ${boxId} at location ${location}`,
+    });
 
     // TODO: Implement WebSocket notification for 'new item added'
   } catch (err) {
-    res.status(400).json({ status: "fail", message: err.message });
+    res.status(400).json({ status: 'fail', message: err.message });
   }
 };
+
 
 exports.deleteItem = async (req, res) => {
   return;
@@ -77,18 +108,18 @@ exports.searchItems = async (req, res) => {
     const locations = database.collection("Locations")
 
     const items = await locations
-      .aggregate([
-        {
-          $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
-        },
-        {
-          $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
-        },
-        {
-          $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
-        },
-      ])
-      .toArray();
+        .aggregate([
+          {
+            $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+          },
+          {
+            $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
+          },
+          {
+            $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
+          },
+        ])
+        .toArray();
 
     if (!items) {
       res.status(500).json({
@@ -132,17 +163,17 @@ exports.claimItemToggle = async (req, res) => {
 
     // Toggle the isClaimed value
     const result = await locations.updateOne(
-      { "boxes.item.itemId": itemId },
-      {
-        $set: {
-          "boxes.$[box].item.isClaimed": !currentIsClaimed,
-          "boxes.$[box].item.currentOwnerName": name,
-          "boxes.$[box].item.currentOwnerEmail": email,
+        { "boxes.item.itemId": itemId },
+        {
+          $set: {
+            "boxes.$[box].item.isClaimed": !currentIsClaimed,
+            "boxes.$[box].item.currentOwnerName": name,
+            "boxes.$[box].item.currentOwnerEmail": email,
+          },
         },
-      },
-      {
-        arrayFilters: [{ "box.item.itemId": itemId }],
-      }
+        {
+          arrayFilters: [{ "box.item.itemId": itemId }],
+        }
     );
 
     if (result.matchedCount === 0) {
