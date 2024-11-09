@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const itemRoutes = require("./routes/items");
+const locationRoutes = require("./routes/locations")
 const { connect } = require("./config/mongoDB"); // Only importing `connect` to initialize MongoDB connection
 const { initWebSocketServer } = require("./utils/websocket");
 
@@ -19,6 +20,7 @@ app.use("/uploads", express.static("uploads")); // Serve uploaded images
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);
+app.use("/api/locations", locationRoutes);
 
 // MongoDB Connection
 async function initializeMongoDB() {
