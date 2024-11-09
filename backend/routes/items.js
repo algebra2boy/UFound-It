@@ -14,6 +14,5 @@ router.post('/add', itemController.uploadImage, itemController.addItem);
 router.get('/search', itemController.searchItems);
 router.post('/claim', itemController.claimItemToggle);
 router.post('/pickup', authMiddleware, itemController.pickupItem);
-router.put('/updateStatus', authMiddleware, itemController.updateStatus);
 
 module.exports = router;
