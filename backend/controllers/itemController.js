@@ -16,7 +16,38 @@ const upload = multer({ storage: storage });
 
 exports.uploadImage = upload.single("image");
 
+// Helper function to validate item data
+function validateAddItemData(data) {
+  if (typeof data.name !== "string" || data.name.trim() === "") return false;
+  if (typeof data.description !== "string" || data.description.trim() === "") return false;
+  if (typeof data.location !== "string" || data.location.trim() === "") return false;
+  if (isNaN(parseInt(data.boxId))) return false;
+  if (typeof data.email !== "string" || data.email.trim() === "") return false;
+  if (typeof data.userName !== "string" || data.userName.trim() === "") return false;
+  return true;
+}
+
+// Helper function to validate data for claiming an item
+function validateClaimItemData(data) {
+  if (typeof data.itemId !== "string" || data.itemId.trim() === "") return false;
+  if (typeof data.email !== "string" || data.email.trim() === "") return false;
+  if (typeof data.name !== "string" || data.name.trim() === "") return false;
+  return true;
+}
+
+// Helper function to validate data for picking up an item
+function validatePickupItemData(data) {
+  return typeof data.itemId === 'string' && data.itemId.trim() !== "";
+}
+
 exports.addItem = async (req, res) => {
+  if (!validateAddItemData(req.body)) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid request inputs",
+    });
+  }
+
   const { name, description, location, boxId, email, userName, additionalNote } = req.body;
   const imageUrl = req.file ? req.file.path : null;
 
@@ -24,18 +55,35 @@ exports.addItem = async (req, res) => {
     const database = getDatabase();
     const locations = database.collection("Locations");
 
+    // Make sure the box is empty
+    const existingDocument = await locations.findOne({
+      location: location,
+      boxes: {
+        $elemMatch: {
+          boxId: parseInt(boxId),
+          containItem: true,
+        }, // Check if the item field exists in this box
+      },
+    });
+
+    if (existingDocument) {
+      return res.status(400).json({
+        status: "fail",
+        message: `Box ${boxId} at ${location} already contains an item. Only one item is allowed per box.`,
+      });
+    }
+
     const item = {
       itemId: uuidv4(),
       name,
       description,
-      additionalNote,
+      additionalNote: additionalNote ? additionalNote : "",
       location,
       boxId,
       imageUrl,
       currentOwnerEmail: email,
       currentOwnerName: userName,
       isClaimed: false,
-      isPickedUp: false,
     };
 
     const result = await locations.updateOne(
@@ -52,13 +100,13 @@ exports.addItem = async (req, res) => {
     );
 
     if (result) {
-      res.status(201).json({
+      return res.status(201).json({
         itemId: item.itemId,
         status: "success",
         message: `Item added to box ${boxId} at location ${location}`,
       });
     } else {
-      res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
+      return res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
     }
 
     // TODO: Implement WebSocket notification for 'new item added'
@@ -73,8 +121,8 @@ exports.deleteItem = async (req, res) => {
 
 exports.searchItems = async (req, res) => {
   try {
-    const database = getDatabase()
-    const locations = database.collection("Locations")
+    const database = getDatabase();
+    const locations = database.collection("Locations");
 
     const items = await locations
       .aggregate([
@@ -91,9 +139,9 @@ exports.searchItems = async (req, res) => {
       .toArray();
 
     if (!items) {
-      res.status(500).json({
+      return res.status(500).json({
         status: "fail",
-        message: "server error"
+        message: "server error",
       });
     }
 
@@ -107,6 +155,13 @@ exports.searchItems = async (req, res) => {
 };
 
 exports.claimItemToggle = async (req, res) => {
+  if (!validateClaimItemData(req.body)) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid request inputs",
+    });
+  }
+
   const { itemId, email, name } = req.body;
 
   try {
@@ -149,20 +204,12 @@ exports.claimItemToggle = async (req, res) => {
       return res.status(404).json({ status: "fail", message: "Update failed, item not found" });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       newIsClaimedStatus: !currentIsClaimed,
       newOwnerName: name,
       newOwnerEmail: email,
       status: "success",
     });
-
-    // item.status = "claimed";
-    // await item.save();
-
-    // res.status(200).json({
-    //   status: "success",
-    //   message: "Item has been claimed successfully",
-    // });
 
     // TODO: Implement WebSocket notification for 'item claimed'
   } catch (err) {
@@ -171,48 +218,66 @@ exports.claimItemToggle = async (req, res) => {
 };
 
 exports.pickupItem = async (req, res) => {
+  if (!validatePickupItemData(req.body)) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid request inputs",
+    });
+  }
+
   const { itemId } = req.body;
 
   try {
-    const item = await Item.findOne({ itemId });
+    const database = getDatabase();
+    const locations = database.collection("Locations");
+    const pickedUpItems = database.collection("PickedUpItems");
 
-    if (!item || item.status !== "claimed") {
-      return res.status(400).json({ status: "fail", message: "Item is not claimed yet or not found" });
-    }
-
-    item.status = "picked up";
-    await item.save();
-
-    res.status(200).json({
-      status: "success",
-      message: "Item has been picked up successfully",
+    // Find the item in the Locations collection
+    const document = await locations.findOne({
+      "boxes.item.itemId": itemId,
     });
 
-    // TODO: Implement WebSocket notification for 'update status'
-  } catch (err) {
-    res.status(400).json({ status: "fail", message: err.message });
-  }
-};
-
-exports.updateStatus = async (req, res) => {
-  const { itemId } = req.body;
-  const { status } = req.body;
-
-  if (!["unclaimed", "claimed", "picked up"].includes(status)) {
-    return res.status(400).json({ status: "fail", message: "Invalid status value" });
-  }
-
-  try {
-    const item = await Item.findOneAndUpdate({ itemId }, { status }, { new: true });
-
-    if (!item) {
-      return res.status(400).json({ status: "fail", message: "Item not found" });
+    if (!document) {
+      return res.status(404).json({ status: "fail", message: "Item not found." });
     }
 
-    res.status(200).json({
-      status: "success",
-      message: "Item status updated",
+    // Locate the specific box containing the item with the matching itemId
+    const box = document.boxes.find((b) => b.item && b.item.itemId === itemId);
+    if (!box || !box.item) {
+      return res.status(404).json({ status: "fail", message: "Item not found in the boxes." });
+    }
+
+    const item = box.item;
+
+    // Insert the item into the PickedUpItems collection
+    await pickedUpItems.insertOne({
+      ...item,
+      pickedUpAt: new Date(), // Optionally add a timestamp for when the item was moved
     });
+
+    // Remove the item from the Locations collection
+    const result = await locations.updateOne(
+      { "boxes.item.itemId": itemId },
+      {
+        $set: {
+          "boxes.$[box].item": null,
+          "boxes.$[box].containItem": false,
+        },
+      },
+      {
+        arrayFilters: [{ "box.item.itemId": itemId }],
+      }
+    );
+
+    if (result.modifiedCount > 0) {
+      return res.status(200).json({
+        status: "success",
+        message: `Item moved to PickedUpItems collection successfully.`,
+        itemId: item.itemId,
+      });
+    } else {
+      return res.status(500).json({ status: "fail", message: "Failed to update the original location document." });
+    }
 
     // TODO: Implement WebSocket notification for 'update status'
   } catch (err) {
