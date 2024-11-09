@@ -11,21 +11,12 @@ import Foundation
 
     init() { }
 
-    func saveLostItem() async {
+    func saveLostItem(lostItem: LostItem) async {
 
         guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/add") else { return }
 
-        // testing purpose
-        let example1: LostItem = .init(
-            name: "waterbottle",
-            description: "description",
-            additionalNote: "good note",
-            location: "worester",
-            boxId: 1,
-            email: "yongyetan@umass.edu")
-
         // convert lostitem swift struct to JSON
-        guard let jsonData = try? JSONEncoder().encode(example1) else { return }
+        guard let jsonData = try? JSONEncoder().encode(lostItem) else { return }
 
         // create the URL request
         var request = URLRequest(url: endpointURL)
