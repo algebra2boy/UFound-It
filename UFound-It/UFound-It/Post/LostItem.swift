@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LostItem {
+struct LostItem: Codable {
 
     var name: String
 
@@ -17,16 +17,16 @@ struct LostItem {
 
     var location: String
 
-    var boxID: Int
+    var boxId: Int
 
     var email: String // the email of the user
 
-    init(name: String, description: String, additionalNote: String, location: String, boxID: Int, email: String) {
+    init(name: String, description: String, additionalNote: String, location: String, boxId: Int, email: String) {
         self.name = name
         self.description = description
         self.additionalNote = additionalNote
         self.location = location
-        self.boxID = boxID
+        self.boxId = boxId
         self.email = email
     }
 }

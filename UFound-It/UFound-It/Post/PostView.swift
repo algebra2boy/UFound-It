@@ -11,6 +11,8 @@ import PhotosUI
 
 struct PostView: View {
 
+    @State private var postViewModel: PostViewModel = .init()
+
     @State private var ItemName = ""
     @State private var additionalNote = ""
 
@@ -59,7 +61,9 @@ struct PostView: View {
                     PostItemCardView(title: "Note (optional)", descriptionText: $additionalNote)
 
                     Button {
-
+                        Task {
+                            await postViewModel.saveLostItem()
+                        }
                     } label: {
                         Text("Submit")
                             .frame(maxWidth: .infinity, minHeight: 20)
