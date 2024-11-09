@@ -78,13 +78,8 @@ struct BuildingDetailView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        Button {
+                        sortMenu
 
-                        } label: {
-                            Image(systemName: "arrow.up.arrow.down")
-                        }
-
-                        // Navigation Link for PostView
                         NavigationLink {
                             PostView()
                         } label: {
@@ -95,6 +90,36 @@ struct BuildingDetailView: View {
             }
         }
     }
+
+    var sortMenu: some View {
+        Menu {
+
+            Button {
+
+            } label: {
+                HStack {
+                    Text("A-Z")
+                    Spacer()
+                    Image(systemName: "character")
+                }
+            }
+
+            Button {
+
+            } label: {
+                Text("Latest")
+            }
+
+            Button {
+
+            } label: {
+                Text("Oldest")
+            }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+        }
+    }
+
 
     @ViewBuilder
     func asyncImage(url: String) -> some View {
@@ -115,6 +140,7 @@ struct BuildingDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: 200)
         }
     }
+
 
 }
 
