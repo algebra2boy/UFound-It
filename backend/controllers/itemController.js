@@ -17,7 +17,7 @@ const upload = multer({ storage: storage });
 exports.uploadImage = upload.single("image");
 
 exports.addItem = async (req, res) => {
-  const { name, description, location, boxId, email, additionalNote } = req.body;
+  const { name, description, location, boxId, email, userName, additionalNote } = req.body;
   const imageUrl = req.file ? req.file.path : null;
 
   try {
@@ -32,8 +32,10 @@ exports.addItem = async (req, res) => {
       location,
       boxId,
       imageUrl,
-      email,
-      status: "unclaimed"
+      currentOwnerEmail: email,
+      currentOwnerName: userName,
+      isClaimed: false,
+      isPickedUp: false,
     };
 
     const result = await locations.updateOne(
@@ -66,28 +68,35 @@ exports.addItem = async (req, res) => {
 };
 
 exports.deleteItem = async (req, res) => {
-  const { email, itemId } = req.body;
-
-  try {
-    const item = await Item.findOneAndDelete({ itemId, email });
-
-    if (!item) {
-      return res.status(400).json({ status: "fail", message: "Item not found or unauthorized" });
-    }
-
-    res.status(200).json({
-      itemId: item.itemId,
-      status: "success",
-      message: "Item deleted successfully",
-    });
-  } catch (err) {
-    res.status(400).json({ status: "fail", message: err.message });
-  }
+  return;
 };
 
 exports.searchItems = async (req, res) => {
   try {
-    const items = await Item.find({ status: "unclaimed" });
+    const database = getDatabase()
+    const locations = database.collection("Locations")
+
+    const items = await locations
+      .aggregate([
+        {
+          $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+        },
+        {
+          $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
+        },
+        {
+          $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
+        },
+      ])
+      .toArray();
+
+    if (!items) {
+      res.status(500).json({
+        status: "fail",
+        message: "server error"
+      });
+    }
+
     res.status(200).json({
       items,
       status: "success",
@@ -97,23 +106,63 @@ exports.searchItems = async (req, res) => {
   }
 };
 
-exports.claimItem = async (req, res) => {
-  const { itemId } = req.body;
+exports.claimItemToggle = async (req, res) => {
+  const { itemId, email, name } = req.body;
 
   try {
-    const item = await Item.findOne({ itemId });
+    const database = getDatabase();
+    const locations = database.collection("Locations"); // Replace with your collection name
 
-    if (!item || item.status !== "unclaimed") {
-      return res.status(400).json({ status: "fail", message: "Item is already claimed or not found" });
+    // First, find the current value of isClaimed for the target item by itemId
+    const document = await locations.findOne({
+      "boxes.item.itemId": itemId,
+    });
+
+    if (!document) {
+      return res.status(404).json({ status: "fail", message: "Item not found" });
     }
 
-    item.status = "claimed";
-    await item.save();
+    // Find the specific box with the matching itemId to retrieve `isClaimed` status
+    const box = document.boxes.find((b) => b.item && b.item.itemId === itemId);
+    if (!box || !box.item) {
+      return res.status(404).json({ status: "fail", message: "Box or item not found" });
+    }
+
+    const currentIsClaimed = box.item.isClaimed;
+
+    // Toggle the isClaimed value
+    const result = await locations.updateOne(
+      { "boxes.item.itemId": itemId },
+      {
+        $set: {
+          "boxes.$[box].item.isClaimed": !currentIsClaimed,
+          "boxes.$[box].item.currentOwnerName": name,
+          "boxes.$[box].item.currentOwnerEmail": email,
+        },
+      },
+      {
+        arrayFilters: [{ "box.item.itemId": itemId }],
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ status: "fail", message: "Update failed, item not found" });
+    }
 
     res.status(200).json({
+      newIsClaimedStatus: !currentIsClaimed,
+      newOwnerName: name,
+      newOwnerEmail: email,
       status: "success",
-      message: "Item has been claimed successfully",
     });
+
+    // item.status = "claimed";
+    // await item.save();
+
+    // res.status(200).json({
+    //   status: "success",
+    //   message: "Item has been claimed successfully",
+    // });
 
     // TODO: Implement WebSocket notification for 'item claimed'
   } catch (err) {
