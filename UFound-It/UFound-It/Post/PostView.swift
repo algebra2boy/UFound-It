@@ -112,7 +112,14 @@ struct PostView: View {
                 boxId: 1,
                 email: "yongyetan@umass.edu")
 
-            await postViewModel.saveLostItem(lostItem: lostItem)
+            if let pickerData = try? await pickerItem?.loadTransferable(type: Data.self),
+               let uiImage = UIImage(data: pickerData) {
+
+                // Convert UIImage to JPEG Data
+                let imageData = uiImage.jpegData(compressionQuality: 0.8)!
+
+                await postViewModel.saveLostItem(lostItem: lostItem, imageData: imageData)
+            }
         }
     }
 }
