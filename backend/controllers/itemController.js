@@ -107,8 +107,6 @@ exports.addItem = async (req, res) => {
       isClaimed: false,
     };
 
-    console.log(req.body)
-
     const result = await locations.updateOne(
         { location: location, 'boxes.boxId': parseInt(boxId) },
         {
@@ -131,12 +129,6 @@ exports.addItem = async (req, res) => {
     } else {
       return res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
     }
-
-    res.status(201).json({
-      itemId: item.itemId,
-      status: 'success',
-      message: `Item added to box ${boxId} at location ${location}`,
-    });
 
     // TODO: Implement WebSocket notification for 'new item added'
   } catch (err) {
@@ -301,9 +293,9 @@ exports.pickupItem = async (req, res) => {
 
     if (result.modifiedCount > 0) {
       return res.status(200).json({
+        itemId: item.itemId,
         status: "success",
         message: `Item moved to PickedUpItems collection successfully.`,
-        itemId: item.itemId,
       });
     } else {
       return res.status(500).json({ status: "fail", message: "Failed to update the original location document." });
