@@ -11,7 +11,9 @@ import PhotosUI
 
 struct PostView: View {
 
-    @State private var ItemName = ""
+    @State private var postViewModel: PostViewModel = .init()
+
+    @State private var itemName = ""
     @State private var description = ""
 
     @State private var additionalNote = ""
@@ -58,8 +60,8 @@ struct PostView: View {
                         selectPhoto()
                     }
 
-                    PostItemCardView(title: "Name of item", descriptionText: $ItemName)
-                    
+                    PostItemCardView(title: "Name of item", descriptionText: $itemName)
+
                     PostItemCardView(title: "Description", descriptionText: $description)
 
 

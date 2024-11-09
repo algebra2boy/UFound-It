@@ -38,7 +38,7 @@ struct ContentView: View {
             }
 
             Tab(AppTab.profile.title, systemImage: AppTab.profile.systemImage, value: AppTab.profile) {
-                Text("profile")
+                UserProfileView()
             }
 
         }
