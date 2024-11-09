@@ -21,7 +21,7 @@ struct ItemView: View {
                         .padding(EdgeInsets(top: 10, leading: 18, bottom: 6, trailing:18))
                     Text("Golden Pencil")
                         .font(.system(size: 26, weight: .bold))
-                    .padding(EdgeInsets(top: 2, leading: 18, bottom: 5, trailing:18))
+                        .padding(EdgeInsets(top: 2, leading: 18, bottom: 5, trailing:18))
                     
                     VStack(alignment: .leading, spacing: 5) {
                         HStack() {
@@ -45,25 +45,24 @@ struct ItemView: View {
                             .font(.system(size: 17, weight: .light))
                             .padding([.leading, .trailing], 48)
                         
+                        
                         Spacer()
-                        
-                        
-                        
-                        VStack(alignment: .center, spacing: 10) {
-                            Text("Bob Johnson Joe")
-                                .font(.system(size: 19, weight: .medium))
-                                .padding()
-                                .frame(alignment: .center)
-                            Text("bobjohnsonjoe@gmail.com")
-                                .font(.system(size: 17, weight: .light))
-                                .padding([.leading, .trailing])
-                                         }
-                        
-                        
                     }
                     .padding([.horizontal, .bottom], 10)
+                }
+                
+                VStack(alignment: .center) {
+                    Text("Contact Details")
+                        .font(.system(size: 17, weight: .bold))
+                        .frame(alignment: .center)
+                    Text("Bob Johnson Joe")
+                        .font(.system(size: 15, weight: .light))
+                        .frame(alignment: .center)
+                    Text("bobjohnsonjoe@gmail.com")
+                        .font(.system(size: 15, weight: .light))
                     
                 }
+                
             }
             
             .toolbar {
