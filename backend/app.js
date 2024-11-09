@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const itemRoutes = require("./routes/items");
+const morgan = require("morgan");
 const locationRoutes = require("./routes/locations")
 const { connect } = require("./config/mongoDB"); // Only importing `connect` to initialize MongoDB connection
 const { initWebSocketServer } = require("./utils/websocket");
@@ -13,6 +14,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
