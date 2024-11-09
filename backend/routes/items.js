@@ -7,6 +7,7 @@ const itemController = require('../controllers/itemController');
 // router.post('/add', authMiddleware, itemController.uploadImage, itemController.addItem);
 // router.post('/delete', authMiddleware, itemController.deleteItem);
 // router.post('/claim', authMiddleware, itemController.claimItem);
+// router.post('/pickup', authMiddleware, itemController.pickupItem);
 
 // This is the testing version (no image is uploaded and no user verification is needed)
 router.post('/add', itemController.uploadImage, itemController.addItem);
