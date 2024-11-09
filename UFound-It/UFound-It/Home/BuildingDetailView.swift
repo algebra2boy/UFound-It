@@ -149,9 +149,13 @@ struct BuildingDetailView: View {
     }
     
     private func navigate() {
-        detent = .large
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+        if detent != .large {
+            detent = .large
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                navigateToPostView = true
+            }
+        } else {
             navigateToPostView = true
         }
     }
