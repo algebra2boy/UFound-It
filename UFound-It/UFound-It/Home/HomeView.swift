@@ -36,6 +36,7 @@ struct HomeView: View {
                             .padding(5)
                     }
                     .onTapGesture {
+                        homeViewModel.selectedLocation = location
                         presentBottomSheet.toggle()
                     }
                 }
@@ -46,7 +47,8 @@ struct HomeView: View {
             await homeViewModel.fetchAllLocations()
         }
         .sheet(isPresented: $presentBottomSheet) {
-            BuildingDetailView(present: $presentBottomSheet, detent: $currentDetent)
+
+            BuildingDetailView(present: $presentBottomSheet, detent: $currentDetent, buildingName: homeViewModel.selectedLocation?.location ?? "Unknown building")
                 .presentationDetents([.fraction(0.465), .fraction(0.7), .large], selection: $currentDetent)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(20)

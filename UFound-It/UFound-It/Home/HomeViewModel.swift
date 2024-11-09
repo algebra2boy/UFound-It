@@ -11,6 +11,8 @@ import Foundation
 
     var boxLocations: [BoxLocation] = []
 
+    var selectedLocation: BoxLocation? = nil
+
     init() { }
 
     func fetchAllLocations() async {
