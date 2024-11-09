@@ -16,6 +16,8 @@ struct BuildingDetailView: View {
         GridItem(.flexible())
     ]
 
+    @Binding var present: Bool
+
     let data = (1...2).map { "Item \($0)" }
 
     var body: some View {
@@ -62,14 +64,32 @@ struct BuildingDetailView: View {
 
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("Franklin Dining Hall")
+            .navigationBarTitleDisplayMode(.inline)
             .presentationDragIndicator(.visible)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    
-                    NavigationLink {
-                        PostView()
+
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        present.toggle()
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "xmark")
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack {
+                        Button {
+
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                        }
+
+                        // Navigation Link for PostView
+                        NavigationLink {
+                            PostView()
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }
@@ -99,7 +119,10 @@ struct BuildingDetailView: View {
 }
 
 #Preview {
-    BuildingDetailView()
+
+    @Previewable @State var present: Bool = false
+
+    BuildingDetailView(present: $present)
 }
 
 
