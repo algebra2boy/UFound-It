@@ -1,5 +1,5 @@
 //
-//  LoginView.swift
+//  SignUpView.swift
 //  UFound-It
 //
 //  Created by CHENGTAO LIN on 11/9/24.
@@ -7,59 +7,57 @@
 
 import SwiftUI
 
-struct LoginView: View {
+struct SignUpView: View {
+
     @State private var username: String = ""
+
     @State private var password: String = ""
-    @State private var isSigningInView: Bool = false
-    @State private var backgroundImg: String = "background-umass"
-    var isSignInButtonDisabled: Bool {
-        [username, password].contains(where: \.isEmpty)
-    }
+    @State private var backgroundImg: String = "background-umass2"
+    
+    @State private var isSigningInView: Bool = true
+
     var body: some View {
         NavigationStack {
             ZStack {
-                
+
                 Color.gray.opacity(0.15)
-                
+
                 VStack {
-                    
+
                     AuthHeaderView(backgroundImg: $backgroundImg)
                         .padding()
-                                        
-                    Text("Login in")
-                        .font(.title)
+                    
+                    Text("Sign in")
+                        .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
-                    
+
                     UserNamePasswordView(
                         username: $username,
                         password: $password,
                         isSignInButton: $isSigningInView)
                     .frame(width: 350)
-                    
+
                     HStack {
-                        Text("Don't have an account? ")
+                        Text("Have an account? ")
                             .bold()
-                        
+
                         NavigationLink {
-                            SignUpView()
+                            LoginView()
                         } label: {
-                            Text("Sign up")
+                            Text("Login")
                                 .underline()
                                 .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
                         }
                     }
                 }
-                
             }
             .ignoresSafeArea()
             .navigationBarBackButtonHidden()
         }
-
     }
-
 }
 
 #Preview {
-    LoginView()
+    SignUpView()
 }
