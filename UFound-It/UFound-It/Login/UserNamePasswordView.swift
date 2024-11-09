@@ -48,6 +48,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                     .cornerRadius(15.0)
             }
             Button {
+                // TODO: Button ACTION
                 print("do login action")
             } label: {
                 (isSignInButton ? Text("Sign In") : Text("Log In")) // Corrected syntax
