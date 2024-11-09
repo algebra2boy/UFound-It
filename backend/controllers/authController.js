@@ -7,7 +7,7 @@ dotenv.config();
 const { getDatabase } = require("../config/mongoDB");
 
 exports.signup = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const database = getDatabase(); // Retrieve the database instance
@@ -23,6 +23,7 @@ exports.signup = async (req, res) => {
 
     // Create new user
     const newUser = {
+      name,
       email,
       password: hashedPassword, // Make sure to hash the password in a real application
     };
@@ -59,8 +60,10 @@ exports.login = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const name = user.name;
 
     res.status(200).json({
+      name,
       email: user.email,
       token,
       status: "success",
