@@ -8,18 +8,13 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.json());
 
-/*let clientId = "dropbox_number_one";*/
 const clients = new Map();
-
+let boxState = null;    // 'lock' or 'unlock'
 
 // WebSocket handling
 wss.on('connection', (ws) => {
     console.log('ESP32 connected');
     let clientId = null;
-
-    // Default to unlock the box
-    // Uncomment the following line on deployment
-    // ws.send("unlock");
 
     // Listen for the first message to get the client ID
     ws.on('message', (message) => {
@@ -77,34 +72,37 @@ function unlockClient(clientId){
 
 // Set up Express routes for HTTP API
 app.post('/api/control/lock', (req, res) => {
-    let body = req.body;
-    if (!body.clientId) {
-        res.status(400).send('Missing clientId in request body');
+    const clientId = req.query.clientId;
+    if (!clientId) {
+        res.status(400).send('Missing clientId in query parameters');
         return;
     }
-    let clientId = body.clientId;
     if (!clients.has(clientId)) {
         res.status(404).send('Client not found');
         return;
     }
-    lockClient(clientId);
-    res.send('Box lock command sent');
+    if (boxState === 'unlock') {
+        lockClient(clientId);
+        res.send('Box lock command sent');
+    }
+    boxState = 'lock';
 });
 
 app.post('/api/control/unlock', (req, res) => {
-    let body = req.body;
-    if (!body.clientId) {
-        res.status(400).send('Missing clientId in request body');
+    const clientId = req.query.clientId;
+    if (!clientId) {
+        res.status(400).send('Missing clientId in query parameters');
         return;
     }
-    let clientId = body.clientId;
     if (!clients.has(clientId)) {
         res.status(404).send('Client not found');
         return;
     }
+    if (boxState === 'lock') {
+        unlockClient(clientId);
+        res.send('Box unlock command sent');
+    }
     boxState = 'unlock';
-    unlockClient(clientId);
-    res.send('Box unlock command sent');
 });
 
 
