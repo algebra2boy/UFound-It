@@ -29,7 +29,7 @@ struct SignUpView: View {
                     Text("Sign in")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
+                        .foregroundColor(Color.UmassRed)
 
                     UserNamePasswordView(
                         username: $username,
@@ -46,7 +46,7 @@ struct SignUpView: View {
                         } label: {
                             Text("Login")
                                 .underline()
-                                .foregroundColor(Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255))
+                                .foregroundColor(Color.UmassRed)
                         }
                     }
                 }
