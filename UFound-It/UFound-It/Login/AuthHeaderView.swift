@@ -9,12 +9,13 @@ import Foundation
 import SwiftUI
 
 struct AuthHeaderView: View {
-    var body: some View {
-        Image("background-umass")
+    @Binding var backgroundImg: String
+        var body: some View {
+            Image(backgroundImg)
             .renderingMode(.original)
             .resizable()
             .aspectRatio(contentMode: .fill)
-            .frame(width: 356, height: 480)
+            .frame(width: 356, height: 390)
             .clipped()
             .overlay(alignment: .topLeading) {
                 // Hero
@@ -53,5 +54,6 @@ struct AuthHeaderView: View {
 }
 
 #Preview {
-    AuthHeaderView()
+    @Previewable @State var backgroundImg: String = "background-umass"
+    AuthHeaderView(backgroundImg: $backgroundImg)
 }
