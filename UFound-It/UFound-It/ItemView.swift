@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct ItemView: View {
+
+    @State private var showingAlert = false
+    @State private var name = ""
+
     var body: some View {
         
         NavigationStack {
@@ -61,25 +65,27 @@ struct ItemView: View {
                     Text("bobjohnsonjoe@gmail.com")
                         .font(.system(size: 15, weight: .light))
                     
+                    
                 }
                 
             }
             
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    
                     Button {
                         
                     } label: {
-                        Image(systemName: "arrow.backward")
+                        Text("Is This Yours?")
                     }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Text("Status: Claimed")
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.black, lineWidth: 1)
-                        }
+                    .alert("Enter your name", isPresented: $showingAlert) {
+                                TextField("Enter your name", text: $name)
+                                Button("OK", action: submit)
+                            } message: {
+                                Text("Xcode will print whatever you type.")
+                            }
+                    
                 }
             }
             
@@ -89,6 +95,11 @@ struct ItemView: View {
 }
 
 
+    
+    func submit() {
+            print("You entered yes")
+        }
+    
 @ViewBuilder
 func asyncImage(url: String) -> some View {
     if let url = URL(string: url) {

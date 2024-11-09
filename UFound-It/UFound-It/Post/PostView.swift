@@ -13,6 +13,7 @@ struct PostView: View {
 
     @State private var ItemName = ""
     @State private var description = ""
+
     @State private var additionalNote = ""
 
     @State private var pickerItem: PhotosPickerItem?
@@ -61,10 +62,11 @@ struct PostView: View {
                     
                     PostItemCardView(title: "Description", descriptionText: $description)
 
+
                     PostItemCardView(title: "Note (optional)", descriptionText: $additionalNote)
 
                     Button {
-
+                        submitLostItem()
                     } label: {
                         Text("Submit")
                             .frame(maxWidth: .infinity, minHeight: 20)
@@ -92,6 +94,21 @@ struct PostView: View {
     private func selectPhoto() {
         Task {
             selectedImage = try await pickerItem?.loadTransferable(type: Image.self)
+        }
+    }
+
+    private func submitLostItem() {
+        Task {
+
+            let lostItem: LostItem = .init(
+                name: itemName,
+                description: "description",
+                additionalNote: additionalNote,
+                location: "worester",
+                boxId: 1,
+                email: "yongyetan@umass.edu")
+
+            await postViewModel.saveLostItem(lostItem: lostItem)
         }
     }
 }
