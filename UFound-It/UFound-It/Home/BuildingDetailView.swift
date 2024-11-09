@@ -107,7 +107,7 @@ struct BuildingDetailView: View {
                 }
             }
             .navigationDestination(isPresented: $navigateToPostView, destination: {
-                PostView()
+                PostView(buildingName: buildingName)
             })
         }
     }

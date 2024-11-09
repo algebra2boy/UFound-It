@@ -21,6 +21,8 @@ struct PostView: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var selectedImage: Image? = nil
 
+    var buildingName: String
+
     var body: some View {
         VStack {
             ScrollView {
@@ -104,9 +106,9 @@ struct PostView: View {
 
             let lostItem: LostItem = .init(
                 name: itemName,
-                description: "description",
+                description: description,
                 additionalNote: additionalNote,
-                location: "worester",
+                location: buildingName,
                 boxId: 1,
                 email: "yongyetan@umass.edu")
 
@@ -116,5 +118,5 @@ struct PostView: View {
 }
 
 #Preview {
-    PostView()
+    PostView(buildingName: "ABC")
 }
