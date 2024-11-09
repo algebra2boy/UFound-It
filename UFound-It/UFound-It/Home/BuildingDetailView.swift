@@ -25,65 +25,71 @@ struct BuildingDetailView: View {
 
                 ScrollView {
 
-                    LazyVGrid(columns: columns, spacing: 30) {
+                    LazyVGrid(columns: columns, spacing: 20) {
 
                         ForEach(data, id: \.self) { item in
 
-                            VStack(alignment: .leading, spacing: 0) {
+                            GeometryReader { geometry in
+                                VStack(alignment: .leading, spacing: 10) {
 
-                                VStack(alignment: .leading) {
-                                    asyncImage(url: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Yellow_Transparent_%28cropped%29.jpg")
-                                        .frame(height: 200)
-                                }
-                                .cornerRadius(10)
-                                .clipped()
+                                    asyncImage(url: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglLaLDQjsbMAYFLzkE38lL3JCIRFL0yr71tgUhao6lbIEnn-0qX2ycC15DerAKRc_G_D1sDDa67A1Oc-JogX09WQA6XxjLsg2sDLcLWexjKOdkX8HnUAVy4hyphenhyphen3bKMrN4UEdsE4SO4Yj5Wz/s5046/Dederick+7-01-01.JPG")
+                                        .clipped()
 
-                                HStack {
-                                    Text("Name: \(item)")
-                                        .font(.system(size: 20, weight: .light))
-                                }
-                                .padding(.horizontal, 5)
+                                    // Text Section
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text("\(item)")
+                                            .font(.system(size: 18, weight: .medium))
 
-                                HStack {
-                                    Text("Posted @ 5:00pm")
-                                        .font(.system(size: 20, weight: .light))
+                                        Text("Posted @ 5:00pm")
+                                            .font(.system(size: 16, weight: .light))
+                                    }
+                                    .padding([.horizontal, .bottom], 10)
+
                                 }
-                                .padding(.horizontal, 5)
+                                .background(Color.white)
+                                .cornerRadius(15)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .stroke(Color.gray, lineWidth: 0.5)
+                                }
                             }
-                            .cornerRadius(10)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.black, lineWidth: 5)
-                            }
+                            .frame(height: 200) // Fixed height for each grid item
                         }
                     }
+                    .padding()
                 }
-                .padding()
             }
-        }
 
-        .searchable(text: $searchText, prompt: "Search for lost items")
-        .navigationTitle("Franklin dinning hall")
-        .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $searchText, prompt: "Search for lost items")
+            .navigationTitle("Franklin Dining Hall")
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 
-}
-
-@ViewBuilder
-func asyncImage(url: String) -> some View {
-    if let url = URL(string: url) {
-        AsyncImage(url: url) { image in
-            image
+    @ViewBuilder
+    func asyncImage(url: String) -> some View {
+        if let url = URL(string: url) {
+            AsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+            } placeholder: {
+                ProgressView()
+                    .frame(maxWidth: .infinity) // Ensure the progress view spans the full width
+            }
+        } else {
+            Image(systemName: "photo")
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-        } placeholder: {
-            ProgressView()
+                .scaledToFit() // Scale the default image to fit inside the container
+                .frame(maxWidth: .infinity, maxHeight: 200)
         }
-    } else {
-        Image(systemName: "photo") // default image
     }
+
 }
 
 #Preview {
     BuildingDetailView()
 }
+
+
