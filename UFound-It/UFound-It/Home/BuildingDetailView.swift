@@ -63,6 +63,18 @@ struct BuildingDetailView: View {
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("Franklin Dining Hall")
             .navigationBarTitleDisplayMode(.inline)
+            .presentationDetents([.fraction(0.4)])
+            .presentationDragIndicator(.visible)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    
+                    NavigationLink {
+                        PostView()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
         }
     }
 
