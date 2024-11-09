@@ -60,7 +60,7 @@ struct UserNamePasswordView: View { // Corrected struct name
             .frame(maxWidth: .infinity)
             .background(
                 LinearGradient(
-                    colors: isSignInButtonDisabled ? [.gray] : [Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255), Color(red: 152 / 255, green: 33 / 255, blue: 28 / 255)],
+                    colors: isSignInButtonDisabled ? [.gray] : [Color.UmassRed],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
