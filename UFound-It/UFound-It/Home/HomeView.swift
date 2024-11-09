@@ -39,8 +39,8 @@ struct HomeView: View {
 
         }
         .sheet(isPresented: $presentBottomSheet) {
-            BuildingDetailView(present: $presentBottomSheet)
-                .presentationDetents([.fraction(0.4)])
+            BuildingDetailView()
+                .presentationDetents([.fraction(0.465)])
                 .presentationDragIndicator(.visible)
         }
     }
