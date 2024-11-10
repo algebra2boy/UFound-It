@@ -229,9 +229,17 @@ exports.claimItemToggle = async (req, res) => {
 
     const currentIsClaimed = box.item.isClaimed;
 
+    const filter = currentIsClaimed
+      ? {
+          "boxes.item.itemId": itemId,
+          "boxes.item.currentOwnerName": name,
+          "boxes.item.currentOwnerEmail": email,
+        }
+      : { "boxes.item.itemId": itemId };
+
     // Toggle the isClaimed value
     const result = await locations.updateOne(
-      { "boxes.item.itemId": itemId },
+      filter,
       {
         $set: {
           "boxes.$[box].item.isClaimed": !currentIsClaimed,
@@ -245,7 +253,7 @@ exports.claimItemToggle = async (req, res) => {
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ status: "fail", message: "Update failed, item not found" });
+      return res.status(404).json({ status: "fail", message: "Update failed, the item has been claimed by others" });
     }
 
     return res.status(200).json({
