@@ -36,7 +36,7 @@ struct ContentView: View {
 
         TabView(selection: $selectedTab) {
             Tab(AppTab.home.title, systemImage: AppTab.home.systemImage, value: AppTab.home) {
-                HomeView()
+                LoginView()
             }
 
             Tab(AppTab.profile.title, systemImage: AppTab.profile.systemImage, value: AppTab.profile) {
