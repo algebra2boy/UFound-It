@@ -253,7 +253,7 @@ exports.claimItemToggle = async (req, res) => {
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ status: "fail", message: "Update failed, the item has been claimed by others" });
+      return res.status(400).json({ status: "fail", message: "Update failed, the item has been claimed by others" });
     }
 
     return res.status(200).json({
