@@ -27,11 +27,6 @@ struct LoginView: View {
                     
                     AuthHeaderView(backgroundImg: $backgroundImg)
                         .padding()
-//                                        
-//                    Text("Log in")
-//                        .font(.title)
-//                        .fontWeight(.bold)
-//                        .foregroundColor(Color.UmassRed)
                     
                     UserNamePasswordView(
                         email: $email,
