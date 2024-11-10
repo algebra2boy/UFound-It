@@ -32,6 +32,8 @@ struct ItemsByLocation: Codable, Hashable {
     var boxItemsByLocation: [ItemsByLocation] = []
     var selectedLocation: BoxLocation? = nil
 
+    var selectedItem: ItemsByLocation? = nil
+
     init() { }
 
     func fetchAllLocations() async {
