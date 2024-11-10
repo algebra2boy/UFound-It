@@ -1,7 +1,9 @@
-const AWS = require('aws-sdk');
-const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
-const { getDatabase } = require('../config/mongoDB');
+const AWS = require("aws-sdk");
+const multer = require("multer");
+const { v4: uuidv4 } = require("uuid");
+
+const { lock, unlock } = require("../box_control/lock");
+const { getDatabase } = require("../config/mongoDB");
 
 // AWS configuration using environment variables
 AWS.config.update({
@@ -16,7 +18,7 @@ const s3 = new AWS.S3();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-exports.uploadImage = upload.single('image');
+exports.uploadImage = upload.single("image");
 
 // Helper function to validate item data
 function validateAddItemData(data) {
@@ -39,7 +41,7 @@ function validateClaimItemData(data) {
 
 // Helper function to validate data for picking up an item
 function validatePickupItemData(data) {
-  return typeof data.itemId === 'string' && data.itemId.trim() !== "";
+  return typeof data.itemId === "string" && data.itemId.trim() !== "";
 }
 
 exports.addItem = async (req, res) => {
@@ -55,20 +57,20 @@ exports.addItem = async (req, res) => {
 
   try {
     const database = getDatabase();
-    const locations = database.collection('Locations');
+    const locations = database.collection("Locations");
 
     // Check if an image is provided
     let imageUrl = null;
     if (req.file) {
       // Generate a unique filename
-      const imageName = uuidv4() + '-' + req.file.originalname;
+      const imageName = uuidv4() + "-" + req.file.originalname;
 
       // Prepare the params for S3 upload
       const params = {
         Bucket: process.env.S3_BUCKET_NAME, // Your bucket name
-        Key: imageName,                     // File name you want to save as in S3
-        Body: req.file.buffer,              // File buffer from multer
-        ContentType: req.file.mimetype
+        Key: imageName, // File name you want to save as in S3
+        Body: req.file.buffer, // File buffer from multer
+        ContentType: req.file.mimetype,
       };
 
       // Uploading files to the bucket
@@ -108,34 +110,49 @@ exports.addItem = async (req, res) => {
     };
 
     const result = await locations.updateOne(
-        { location: location, 'boxes.boxId': parseInt(boxId) },
-        {
-          $set: {
-            'boxes.$[box].item': item,
-            'boxes.$[box].containItem': true,
-          },
+      { location: location, "boxes.boxId": parseInt(boxId) },
+      {
+        $set: {
+          "boxes.$[box].item": item,
+          "boxes.$[box].containItem": true,
         },
-        {
-          arrayFilters: [{ 'box.boxId': parseInt(boxId) }],
-        }
+      },
+      {
+        arrayFilters: [{ "box.boxId": parseInt(boxId) }],
+      }
     );
 
     if (result) {
-      return res.status(201).json({
-        itemId: item.itemId,
-        status: "success",
-        message: `Item added to box ${boxId} at location ${location}`,
-      });
+      const statusCode = await lock();
+
+      if (statusCode === 200) {
+        return res.status(201).json({
+          itemId: item.itemId,
+          status: "success",
+          message: `Item added to box ${boxId} at location ${location}`,
+        });
+      } else if (statusCode === 400) {
+        return res.status(400).json({
+          status: "fail",
+          message: `Bad request`,
+        });
+      } else if (statusCode === 404) {
+        return res.status(400).json({
+          status: "fail",
+          message: `Client not found`,
+        });
+      } else {
+        return res.status(500).json({ status: "fail", message: "no response from lock server" });
+      }
     } else {
       return res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
     }
 
     // TODO: Implement WebSocket notification for 'new item added'
   } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
+    res.status(400).json({ status: "fail", message: err.message });
   }
 };
-
 
 exports.deleteItem = async (req, res) => {
   return;
@@ -214,17 +231,17 @@ exports.claimItemToggle = async (req, res) => {
 
     // Toggle the isClaimed value
     const result = await locations.updateOne(
-        { "boxes.item.itemId": itemId },
-        {
-          $set: {
-            "boxes.$[box].item.isClaimed": !currentIsClaimed,
-            "boxes.$[box].item.currentOwnerName": name,
-            "boxes.$[box].item.currentOwnerEmail": email,
-          },
+      { "boxes.item.itemId": itemId },
+      {
+        $set: {
+          "boxes.$[box].item.isClaimed": !currentIsClaimed,
+          "boxes.$[box].item.currentOwnerName": name,
+          "boxes.$[box].item.currentOwnerEmail": email,
         },
-        {
-          arrayFilters: [{ "box.item.itemId": itemId }],
-        }
+      },
+      {
+        arrayFilters: [{ "box.item.itemId": itemId }],
+      }
     );
 
     if (result.matchedCount === 0) {
@@ -297,11 +314,27 @@ exports.pickupItem = async (req, res) => {
     );
 
     if (result.modifiedCount > 0) {
-      return res.status(200).json({
-        itemId: item.itemId,
-        status: "success",
-        message: `Item moved to PickedUpItems collection successfully.`,
-      });
+      const statusCode = await unlock();
+
+      if (statusCode === 200) {
+        return res.status(201).json({
+          itemId: item.itemId,
+          status: "success",
+          message: `Item moved to PickedUpItems collection successfully.`,
+        });
+      } else if (statusCode === 400) {
+        return res.status(400).json({
+          status: "fail",
+          message: `Bad request`,
+        });
+      } else if (statusCode === 404) {
+        return res.status(400).json({
+          status: "fail",
+          message: `Client not found`,
+        });
+      } else {
+        return res.status(500).json({ status: "fail", message: "no response from lock server" });
+      }
     } else {
       return res.status(500).json({ status: "fail", message: "Failed to update the original location document." });
     }
