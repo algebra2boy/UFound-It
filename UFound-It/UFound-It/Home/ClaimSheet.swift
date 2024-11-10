@@ -17,6 +17,9 @@ struct ClaimSheet: View {
     @Binding var isPressed: Bool
     @Binding var isClaimed: Bool
     
+    var name: String
+    var itemId: String
+    var email: String
     
     
     var body: some View {
@@ -42,7 +45,7 @@ struct ClaimSheet: View {
                         isShowingLock.toggle()
                     }
                     Task {
-                        await homeViewModel.changeClaim(with: "ghigh", and: "8382dd78-ccfd-4878-a124-4563e6d5f1c3", and: "ghigh@umass.edu")
+                        await homeViewModel.changeClaim(with: name, and: itemId, and: email)
                     }
                     
                 }) {
@@ -65,7 +68,7 @@ struct ClaimSheet: View {
                             isShowingSheet.toggle()
                             
                             Task {
-                                await homeViewModel.unlockBox(with: "2557e8b6-73fc-425c-bec1-a2dcf876291b")
+                                await homeViewModel.unlockBox(with: itemId)
                             }
                         }) {
                             Text("UNLOCK BOX")

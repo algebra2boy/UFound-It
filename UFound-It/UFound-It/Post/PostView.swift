@@ -78,9 +78,22 @@ struct PostView: View {
                     .padding(.horizontal, 12)
                     .buttonStyle(.borderedProminent)
                     .tint(.UmassRed)
+                    
+                    
+
+
+                }
+                VStack(alignment: .leading) {
+                    Text("Ensure that item is in the box and door is closed before submitting.")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
+                    .padding()
+
                 }
             }
 
+            
             VStack(alignment: .center) {
                 Text("Contact Details")
                     .font(.system(size: 17, weight: .bold))

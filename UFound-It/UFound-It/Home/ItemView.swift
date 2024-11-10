@@ -14,7 +14,8 @@ struct ItemView: View {
     @State private var isClaimed = false
     @State private var showingAlert = false
     @State private var name = ""
-
+    
+    
     let item: ItemsByLocation
     let buildingName: String
 
@@ -85,7 +86,10 @@ struct ItemView: View {
                     isShowingSheet: $isShowingSheet,
                     isShowingLock: $isShowingLock,
                     isPressed: $isPressed,
-                    isClaimed: $isClaimed
+                    isClaimed: $isClaimed,
+                    name: item.currentOwnerName,
+                    itemId: item.itemId,
+                    email: item.currentOwnerEmail
                 )
                 .presentationDragIndicator(.visible)
                 .toolbar {
