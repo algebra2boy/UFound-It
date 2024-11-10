@@ -12,6 +12,8 @@ import PhotosUI
 struct PostView: View {
     
     @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(\.dismiss) private var dismiss
+
 
     @State private var postViewModel: PostViewModel = .init()
 
@@ -94,6 +96,8 @@ struct PostView: View {
 
                     Button {
                         submitLostItem()
+                        dismiss()
+                        
                     } label: {
                         Text("Submit")
                             .frame(maxWidth: .infinity, minHeight: 20)
