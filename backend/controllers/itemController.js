@@ -126,23 +126,24 @@ exports.addItem = async (req, res) => {
       const statusCode = await lock();
 
       if (statusCode === 200) {
-          return res.status(201).json({
-            itemId: item.itemId,
-            status: "success",
-            message: `Item added to box ${boxId} at location ${location}`,
-          });
+        return res.status(201).json({
+          itemId: item.itemId,
+          status: "success",
+          message: `Item added to box ${boxId} at location ${location}`,
+        });
       } else if (statusCode === 400) {
-          return res.status(400).json({
-            status: "fail",
-            message: `Bad request`,
-          });
+        return res.status(400).json({
+          status: "fail",
+          message: `Bad request`,
+        });
       } else if (statusCode === 404) {
-          return res.status(400).json({
-            status: "fail",
-            message: `Client not found`,
-          });
+        return res.status(400).json({
+          status: "fail",
+          message: `Client not found`,
+        });
+      } else {
+        return res.status(500).json({ status: "fail", message: "no response from lock server" });
       }
-
     } else {
       return res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
     }
@@ -313,7 +314,7 @@ exports.pickupItem = async (req, res) => {
     );
 
     if (result.modifiedCount > 0) {
-      const statusCode = await unlock()
+      const statusCode = await unlock();
 
       if (statusCode === 200) {
         return res.status(201).json({
@@ -331,8 +332,9 @@ exports.pickupItem = async (req, res) => {
           status: "fail",
           message: `Client not found`,
         });
+      } else {
+        return res.status(500).json({ status: "fail", message: "no response from lock server" });
       }
-
     } else {
       return res.status(500).json({ status: "fail", message: "Failed to update the original location document." });
     }
