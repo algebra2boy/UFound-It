@@ -11,7 +11,7 @@ import Foundation
 
     init() { }
     
-    @Published var post: PostItemResponse?
+    var post: PostItemResponse?
 
     func saveLostItem(lostItem: LostItem, imageData: Data) async {
 
