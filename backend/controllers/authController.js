@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const {v4: uuidv4} = require("uuid");
 dotenv.config();
 
 const { getDatabase } = require("../config/mongoDB");
@@ -22,6 +23,7 @@ exports.signup = async (req, res) => {
 
     // Create new user
     const newUser = {
+      userId: uuidv4(),
       name,
       email,
       password: hashedPassword, // Make sure to hash the password in a real application
@@ -29,7 +31,7 @@ exports.signup = async (req, res) => {
     await usersCollection.insertOne(newUser);
 
     res.status(201).json({
-      email: newUser.email,
+      email: newUser.userId,
       status: "success",
       message: "Account created. Please verify your email.",
     });
@@ -59,10 +61,10 @@ exports.login = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    const name = user.name;
 
     res.status(200).json({
-      name,
+      userId: user.userId,
+      name: user.name,
       email: user.email,
       token,
       status: "success",

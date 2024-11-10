@@ -107,8 +107,6 @@ exports.addItem = async (req, res) => {
       isClaimed: false,
     };
 
-    console.log(req.body)
-
     const result = await locations.updateOne(
         { location: location, 'boxes.boxId': parseInt(boxId) },
         {
@@ -132,12 +130,6 @@ exports.addItem = async (req, res) => {
       return res.status(400).json({ status: "fail", message: "Invalid location or boxId" });
     }
 
-    res.status(201).json({
-      itemId: item.itemId,
-      status: 'success',
-      message: `Item added to box ${boxId} at location ${location}`,
-    });
-
     // TODO: Implement WebSocket notification for 'new item added'
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
@@ -155,18 +147,23 @@ exports.searchItems = async (req, res) => {
     const locations = database.collection("Locations");
 
     const items = await locations
-        .aggregate([
-          {
-            $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+      .aggregate([
+        {
+          $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+        },
+        {
+          $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
+        },
+        {
+          $addFields: {
+            "boxes.item.boxId": { $toInt: "$boxes.boxId" }, // Ensures boxId is an integer
           },
-          {
-            $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
-          },
-          {
-            $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
-          },
-        ])
-        .toArray();
+        },
+        {
+          $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
+        },
+      ])
+      .toArray();
 
     if (!items) {
       return res.status(500).json({
@@ -301,9 +298,9 @@ exports.pickupItem = async (req, res) => {
 
     if (result.modifiedCount > 0) {
       return res.status(200).json({
+        itemId: item.itemId,
         status: "success",
         message: `Item moved to PickedUpItems collection successfully.`,
-        itemId: item.itemId,
       });
     } else {
       return res.status(500).json({ status: "fail", message: "Failed to update the original location document." });
