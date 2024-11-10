@@ -10,6 +10,8 @@ import SwiftUI
 struct BuildingDetailView: View {
     
     @Environment(HomeViewModel.self) private var homeViewModel: HomeViewModel
+    @State private var sortOption: SortOption = .nameAscending
+
     
     @State private var searchText: String = ""
     
@@ -28,13 +30,20 @@ struct BuildingDetailView: View {
 
     @State private var navigateToItemView: Bool = false
     
+    enum SortOption {
+        case nameAscending, nameDescending
+    }
+    
     private var filteredItems: [ItemsByLocation] {
-        if searchText.isEmpty {
-            return homeViewModel.boxItemsByLocation
-        } else {
-            return homeViewModel.boxItemsByLocation.filter {
-                $0.name.localizedCaseInsensitiveContains(searchText)
-            }
+        let items = homeViewModel.boxItemsByLocation.filter { item in
+            searchText.isEmpty || item.name.localizedCaseInsensitiveContains(searchText)
+        }
+        
+        switch sortOption {
+        case .nameAscending:
+            return items.sorted { $0.name < $1.name }
+        case .nameDescending:
+            return items.sorted { $0.name > $1.name }
         }
     }
     
@@ -115,7 +124,7 @@ struct BuildingDetailView: View {
         Menu {
             
             Button {
-                
+                sortOption = .nameAscending
             } label: {
                 HStack {
                     Text("A-Z")
@@ -125,16 +134,15 @@ struct BuildingDetailView: View {
             }
             
             Button {
-                
+                sortOption = .nameDescending
             } label: {
-                Text("Latest")
+                Text("Z-A")
             }
-            
-            Button {
-                
-            } label: {
-                Text("Oldest")
-            }
+//            Button {
+//                
+//            } label: {
+//                Text("Oldest")
+//            }
         } label: {
             Image(systemName: "arrow.up.arrow.down")
         }
