@@ -52,6 +52,7 @@ struct HomeView: View {
                 .presentationDetents([.fraction(0.465), .fraction(0.7), .large], selection: $currentDetent)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(20)
+                .environment(homeViewModel)
         }
     }
 }

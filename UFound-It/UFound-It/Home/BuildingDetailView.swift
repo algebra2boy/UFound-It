@@ -9,6 +9,8 @@ import SwiftUI
 
 struct BuildingDetailView: View {
     
+    @Environment(HomeViewModel.self) private var homeViewModel: HomeViewModel
+    
     @State private var searchText: String = ""
     
     @State private var columns: [GridItem] = [
@@ -21,9 +23,9 @@ struct BuildingDetailView: View {
     @Binding var present: Bool
     
     @Binding var detent: PresentationDetent
-
+    
     var buildingName: String
-
+    
     let data = (1...2).map { "Item \($0)" }
     
     @State private var navigateToItemView: Bool = false
@@ -76,6 +78,10 @@ struct BuildingDetailView: View {
                 }
             }
             
+            .task {
+                await homeViewModel.fetchByBuilding(with: "")
+            }
+            
             .navigationDestination(isPresented: $navigateToItemView, destination: {
                 ItemView()
             })
@@ -109,6 +115,7 @@ struct BuildingDetailView: View {
             .navigationDestination(isPresented: $navigateToPostView, destination: {
                 PostView(buildingName: buildingName)
             })
+            
         }
     }
     
@@ -182,6 +189,7 @@ struct BuildingDetailView: View {
     @Previewable @State var detent: PresentationDetent = .large
     
     BuildingDetailView(present: $present, detent: $detent, buildingName: "UMASS")
+        .environment(HomeViewModel())
 }
 
 
