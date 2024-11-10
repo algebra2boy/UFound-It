@@ -11,12 +11,8 @@ import Foundation
 
     init() { }
     
-<<<<<<< Updated upstream
     var post: PostItemResponse?
-=======
-//    @Published var post: PostItemResponse?
->>>>>>> Stashed changes
-
+    
     func saveLostItem(lostItem: LostItem, imageData: Data) async {
 
         guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/add") else {
