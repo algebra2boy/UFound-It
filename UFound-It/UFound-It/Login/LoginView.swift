@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var username: String = ""
+    @State private var email: String = ""
     @State private var password: String = ""
+    @State private var verificationCode: String = ""
+
     @State private var isSigningInView: Bool = false
     @State private var backgroundImg: String = "background-umass"
     var isSignInButtonDisabled: Bool {
-        [username, password].contains(where: \.isEmpty)
+        [email, password].contains(where: \.isEmpty)
     }
     var body: some View {
         NavigationStack {
@@ -25,16 +27,17 @@ struct LoginView: View {
                     
                     AuthHeaderView(backgroundImg: $backgroundImg)
                         .padding()
-                                        
-                    Text("Login in")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.UmassRed)
+//                                        
+//                    Text("Log in")
+//                        .font(.title)
+//                        .fontWeight(.bold)
+//                        .foregroundColor(Color.UmassRed)
                     
                     UserNamePasswordView(
-                        username: $username,
+                        email: $email,
+                        verificationCode: $verificationCode,
                         password: $password,
-                        isSignInButton: $isSigningInView)
+                        isSignInView: $isSigningInView)
                     .frame(width: 350)
                     
                     HStack {

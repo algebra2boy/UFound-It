@@ -9,30 +9,64 @@ import SwiftUI
 
 struct UserNamePasswordView: View { // Corrected struct name
     
-    @Binding var username: String
+    @Binding var email: String
+    @Binding var verificationCode: String
     @Binding var password: String
-    @Binding var isSignInButton: Bool
+    @Binding var isSignInView: Bool
     
     var isSignInButtonDisabled: Bool {
-        [username, password].contains(where: \.isEmpty)
+        [email, password].contains(where: \.isEmpty)
     }
     
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 11) {
-                Text("UserName")
+                Text("UMass email")
                     .font(.system(size: 13, weight: .light))
                     .foregroundColor(.secondary)
                     .frame(height: 15, alignment: .leading)
                 
-                TextField("", text: $username)
-                    .font(.system(size: 17, weight: .thin))
-                    .foregroundColor(.primary)
-                    .frame(height: 44)
-                    .padding(.horizontal, 12)
-                    .background(Color.white)
-                    .cornerRadius(15.0)
+                HStack {
+                    TextField("", text: $email)
+                        .font(.system(size: 17, weight: .thin))
+                        .foregroundColor(.primary)
+                        .frame(height: 44)
+                        .padding(.horizontal, 12)
+                        .background(Color.white)
+                        .cornerRadius(15.0)
+                    
+                    if !isSignInView {
+                        Button(action: {
+                            // Add action here
+                        }) {
+                            Image(systemName: "paperplane.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white)
+                                .frame(width: 50, height: 44)
+                                .background(Color.UmassRed)
+                                .cornerRadius(12.0)
+                        }
+                    }
+                }
             }
+            
+            if !isSignInView {
+                VStack(alignment: .leading, spacing: 11) {
+                    Text("Verification Code")
+                        .font(.system(size: 13, weight: .light))
+                        .foregroundColor(.secondary)
+                        .frame(height: 15, alignment: .leading)
+                    
+                    TextField("", text: $verificationCode)
+                        .font(.system(size: 17, weight: .thin))
+                        .foregroundColor(.primary)
+                        .frame(height: 44)
+                        .padding(.horizontal, 12)
+                        .background(Color.white)
+                        .cornerRadius(15.0)
+                }
+            }
+            
             VStack(alignment: .leading, spacing: 11) {
                 Text("Password")
                     .font(.system(size: 13, weight: .light))
@@ -51,7 +85,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                 // TODO: Button ACTION
                 print("do login action")
             } label: {
-                (isSignInButton ? Text("Sign In") : Text("Log In")) // Corrected syntax
+                (isSignInView ? Text("Sign In") : Text("Log In")) // Corrected syntax
                     .font(.title2)
                     .bold()
                     .foregroundColor(.white)
@@ -75,8 +109,12 @@ struct UserNamePasswordView: View { // Corrected struct name
 
 #Preview {
 //    @Previewable @State var descriptionText: String = ""
-    @Previewable @State var isSignInButton: Bool = false
-    @Previewable @State var username: String = "ss"
+    @Previewable @State var isSignInView: Bool = false
+    @Previewable @State var verificationCode: String = "sss"
+    @Previewable @State var email: String = "sss"
     @Previewable @State var password: String = "sss"
-    UserNamePasswordView(username: $username, password: $password, isSignInButton: $isSignInButton)
+    UserNamePasswordView(email: $email,
+                         verificationCode: $verificationCode,
+                         password: $password,
+                         isSignInView: $isSignInView)
 }

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct SignUpView: View {
 
-    @State private var username: String = ""
-
+    @State private var email: String = ""
+    @State private var verificationCode: String = ""
     @State private var password: String = ""
     @State private var backgroundImg: String = "background-umass2"
     
@@ -23,19 +23,14 @@ struct SignUpView: View {
                 Color.gray.opacity(0.15)
 
                 VStack {
-
                     AuthHeaderView(backgroundImg: $backgroundImg)
                         .padding()
-                    
-                    Text("Sign in")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.UmassRed)
 
                     UserNamePasswordView(
-                        username: $username,
+                        email: $email,
+                        verificationCode: $verificationCode,
                         password: $password,
-                        isSignInButton: $isSigningInView)
+                        isSignInView: $isSigningInView)
                     .frame(width: 350)
 
                     HStack {
