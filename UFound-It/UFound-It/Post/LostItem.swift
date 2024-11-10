@@ -11,6 +11,10 @@ struct LostItem: Codable {
 
     var name: String
 
+    var email: String
+
+    var userName: String
+
     var description: String
 
     var additionalNote: String
@@ -18,15 +22,14 @@ struct LostItem: Codable {
     var location: String
 
     var boxId: Int
-
-    var email: String // the email of the user
-
-    init(name: String, description: String, additionalNote: String, location: String, boxId: Int, email: String) {
+    
+    init(name: String, email: String, userName: String, description: String, additionalNote: String, location: String, boxId: Int) {
         self.name = name
+        self.email = email
+        self.userName = userName
         self.description = description
         self.additionalNote = additionalNote
         self.location = location
         self.boxId = boxId
-        self.email = email
     }
 }

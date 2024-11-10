@@ -105,12 +105,13 @@ struct PostView: View {
         Task {
 
             let lostItem: LostItem = .init(
-                name: itemName,
-                description: description,
-                additionalNote: additionalNote,
-                location: buildingName,
-                boxId: 1,
-                email: "yongyetan@umass.edu")
+                name: "Item",
+                email: "yongyetan@umass.edu",
+                userName: "yongye",
+                description: "This is an item",
+                additionalNote: "",
+                location: "Franklin",
+                boxId: 10)
 
             if let pickerData = try? await pickerItem?.loadTransferable(type: Data.self),
                let uiImage = UIImage(data: pickerData) {
