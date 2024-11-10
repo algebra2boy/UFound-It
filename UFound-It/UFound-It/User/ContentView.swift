@@ -53,10 +53,10 @@ struct ContentView: View {
 
                 }
                 .tint(.UmassRed)
-                .environment(authViewModel)
             }
 
         }
+        .environment(authViewModel)
     }
 }
 
