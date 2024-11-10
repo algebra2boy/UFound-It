@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct ClaimSheet: View {
+    
+    @Environment(HomeViewModel.self) private var homeViewModel: HomeViewModel
+    
     @Binding var isShowingSheet: Bool
     @Binding var isShowingLock: Bool
     
     @Binding var isPressed: Bool
     @Binding var isClaimed: Bool
+    
+    
     
     var body: some View {
         
@@ -31,10 +36,15 @@ struct ClaimSheet: View {
                 Button(action: {
                     isPressed = true
                     isClaimed.toggle()
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         isPressed = false
                         isShowingLock.toggle()
                     }
+                    Task {
+                        homeViewModel.changeClaim(with: <#T##String#>, email: <#T##String#>)
+                    }
+                    
                 }) {
                     Text(isClaimed ? "UNCLAIM" : "CLAIM")
                         .padding(15)
