@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct GridCard: View {
-    
-    
+
     @Environment(HomeViewModel.self) private var homeViewModel: HomeViewModel
     @Binding var columns: [GridItem]
     @Binding var navigateToItemView: Bool
     @Binding var buildingName: String
-    
+    @Binding var detent: PresentationDetent
+
     var body: some View {
         
         VStack {
@@ -49,8 +49,16 @@ struct GridCard: View {
                                     .stroke(Color.gray, lineWidth: 0.5)
                             }
                             .onTapGesture {
-                                //selectedItem = item
-                                navigateToItemView.toggle()
+                                homeViewModel.selectedItem = item
+
+
+                                
+
+                                detent = .large
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                    navigateToItemView.toggle()
+                                }
                             }
                         }
                         .frame(height: 200)

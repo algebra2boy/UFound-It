@@ -25,48 +25,46 @@ struct BuildingDetailView: View {
     @Binding var detent: PresentationDetent
     
     @State var buildingName: String
-    
-    //let data = (1...2).map { "Item \($0)" }
-    
+
     @State private var navigateToItemView: Bool = false
-    
-    //@State private var selectedItem:
-    
+
     var body: some View {
         NavigationStack {
             
-            GridCard(columns: $columns, navigateToItemView: $navigateToItemView, buildingName: $buildingName)
-            
+            GridCard(columns: $columns, navigateToItemView: $navigateToItemView, buildingName: $buildingName, detent: $detent)
+
             .navigationDestination(isPresented: $navigateToItemView, destination: {
-                ItemView()
+                if let item = homeViewModel.selectedItem {
+                    ItemView(item: item, buildingName: buildingName)
+                }
             })
             
             .searchable(text: $searchText, prompt: "Search for lost items")
             .navigationTitle("\(buildingName)")
             .navigationBarTitleDisplayMode(.inline)
             .presentationDragIndicator(.visible)
-//            .toolbar {
-//                
-//                ToolbarItem(placement: .topBarLeading) {
-//                    Button {
-//                        present.toggle()
-//                    } label: {
-//                        Image(systemName: "xmark")
-//                    }
-//                }
-//                
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    HStack {
-//                        sortMenu
-//                        
-//                        Button {
-//                            navigate()
-//                        } label: {
-//                            Image(systemName: "plus")
-//                        }
-//                    }
-//                }
-//            }
+            .toolbar {
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        present.toggle()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack {
+                        sortMenu
+                        
+                        Button {
+                            navigate()
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
+            }
             .navigationDestination(isPresented: $navigateToPostView, destination: {
                 PostView(buildingName: buildingName)
             })
