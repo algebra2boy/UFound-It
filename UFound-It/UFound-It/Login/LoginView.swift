@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct LoginView: View {
+    
+    @Environment(AuthViewModel.self) private var authViewModel
+    
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var verificationCode: String = ""
@@ -32,7 +35,9 @@ struct LoginView: View {
                         email: $email,
                         verificationCode: $verificationCode,
                         password: $password,
-                        isSignInView: $isSigningInView)
+                        isSignInView: $isSigningInView,
+                        buttonAction: login
+                    )
                     .frame(width: 350)
                     
                     HStack {
@@ -55,9 +60,16 @@ struct LoginView: View {
         }
 
     }
+    
+    private func login() {
+        Task {
+            await authViewModel.login(email: email, password: password)
+        }
+    }
 
 }
 
 #Preview {
     LoginView()
+        .environment(AuthViewModel())
 }
