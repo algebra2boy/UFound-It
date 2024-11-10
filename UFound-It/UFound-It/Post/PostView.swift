@@ -12,6 +12,7 @@ import PhotosUI
 struct PostView: View {
     
     @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(HomeViewModel.self) private var homeViewModel
     @Environment(\.dismiss) private var dismiss
 
 
@@ -148,6 +149,10 @@ struct PostView: View {
 
                 await postViewModel.saveLostItem(lostItem: lostItem, imageData: imageData)
             }
+
+            // refreshing fetch to get all the lost item
+
+            await homeViewModel.fetchByBuilding(with: buildingName)
         }
     }
 }
@@ -155,4 +160,5 @@ struct PostView: View {
 #Preview {
     PostView(buildingName: "ABC")
         .environment(AuthViewModel())
+        .environment(HomeViewModel())
 }
