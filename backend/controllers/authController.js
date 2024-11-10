@@ -82,7 +82,7 @@ exports.preSignup = async (req, res) => {
   };
 
   try {
-    const result = await emailVerification.updateOne({ email: to }, { $set: { code: verificationCode } }, { upsert: true });
+    const result = await emailVerification.updateOne({ email: to.toLowerCase() }, { $set: { code: verificationCode } }, { upsert: true });
 
     if (!result) {
       res.status(500).json({status: "fail", message: "Error storing verification code"});
@@ -118,7 +118,7 @@ exports.signup = async (req, res) => {
     }
 
     // Check if email already exists
-    const existingUser = await users.findOne({ email });
+    const existingUser = await users.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ status: "fail", message: "Email already exists" });
     }
@@ -129,7 +129,7 @@ exports.signup = async (req, res) => {
     const newUser = {
       userId: uuidv4(),
       name,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword, // Make sure to hash the password in a real application
     };
     await users.insertOne(newUser);
@@ -156,7 +156,7 @@ exports.login = async (req, res) => {
     const users = database.collection("Users"); // Using the "User" collection
 
     // Check if the user exists
-    const user = await users.findOne({ email });
+    const user = await users.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(401).json({ status: "fail", message: "Invalid email or password" });
     }

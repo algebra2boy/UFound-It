@@ -16,7 +16,7 @@ async function unlock(boxId="1") {
     }
 }
 
-async function lock(boxId="dropbox_number_one") {
+async function lock(boxId="1") {
     try {
         const response = await fetch(`https://ubox.zhiyang.duckdns.org/api/control/lock?clientId=${boxId}`, {
             method: 'POST',
