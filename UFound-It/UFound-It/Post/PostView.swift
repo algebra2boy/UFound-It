@@ -10,16 +10,23 @@ import MapKit
 import PhotosUI
 
 struct PostView: View {
+    
+    @Environment(AuthViewModel.self) private var authViewModel
 
     @State private var postViewModel: PostViewModel = .init()
 
     @State private var itemName = ""
     @State private var description = ""
 
-    @State private var additionalNote = ""
+    @State private var additionalNote: String = ""
+    @State private var boxId: Int = 0
 
     @State private var pickerItem: PhotosPickerItem?
     @State private var selectedImage: Image? = nil
+    
+    var boxes: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    @State private var selectedBoxId = 1
+
 
     var buildingName: String
 
@@ -61,11 +68,27 @@ struct PostView: View {
                     .onChange(of: pickerItem) {
                         selectPhoto()
                     }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Select a box ID")
+                            .font(.system(size: 13, weight: .light))
+                            .foregroundColor(.secondary)
+                            .frame(height: 15, alignment: .leading)
+                            .padding(.horizontal)
 
+                        Picker("Please choose a box ID", selection: $selectedBoxId) {
+                            ForEach(boxes, id: \.self) {
+                                Text("\($0)")
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding()
+                    }
+                    
                     PostItemCardView(title: "Name of item", descriptionText: $itemName)
+                    
 
                     PostItemCardView(title: "Description", descriptionText: $description)
-
 
                     PostItemCardView(title: "Note (optional)", descriptionText: $additionalNote)
 
@@ -84,26 +107,13 @@ struct PostView: View {
 
                 }
                 VStack(alignment: .leading) {
-                    Text("Ensure that item is in the box and door is closed before submitting.")
+                    Text("Ensure that item is in the box and door is closed before submitting. \(authViewModel.user?.name ?? "Your name") and \(authViewModel.user?.email ?? "your email") will be included in the lost item report.")
                     .font(.headline)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
                     .padding()
 
                 }
-            }
-
-            
-            VStack(alignment: .center) {
-                Text("Contact Details")
-                    .font(.system(size: 17, weight: .bold))
-                    .frame(alignment: .center)
-                Text("Bob Johnson Joe")
-                    .font(.system(size: 15, weight: .light))
-                    .frame(alignment: .center)
-                Text("bobjohnsonjoe@gmail.com")
-                    .font(.system(size: 15, weight: .light))
-
             }
         }
     }
@@ -118,13 +128,13 @@ struct PostView: View {
         Task {
 
             let lostItem: LostItem = .init(
-                name: "Item",
-                email: "yongyetan@umass.edu",
-                userName: "yongye",
-                description: "This is an item",
-                additionalNote: "",
-                location: "Franklin",
-                boxId: 10)
+                name: itemName,
+                email: authViewModel.user?.email ?? "unknown@gmail.com",
+                userName: authViewModel.user?.name ?? "unknown",
+                description: description,
+                additionalNote: additionalNote,
+                location: buildingName,
+                boxId: selectedBoxId)
 
             if let pickerData = try? await pickerItem?.loadTransferable(type: Data.self),
                let uiImage = UIImage(data: pickerData) {
@@ -140,4 +150,5 @@ struct PostView: View {
 
 #Preview {
     PostView(buildingName: "ABC")
+        .environment(AuthViewModel())
 }
