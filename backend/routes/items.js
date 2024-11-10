@@ -12,7 +12,7 @@ const itemController = require('../controllers/itemController');
 // This is the testing version (no image is uploaded and no user verification is needed)
 router.post('/add', itemController.uploadImage, itemController.addItem);
 router.get('/search', itemController.searchItems);
-router.post('/claim', itemController.claimItemToggle);
-router.post('/pickup', authMiddleware, itemController.pickupItem);
+router.put('/claim', itemController.claimItemToggle);
+router.put('/pickup', itemController.pickupItem);
 
 module.exports = router;
