@@ -63,6 +63,10 @@ struct ClaimSheet: View {
                     if isShowingLock {
                         Button(action: {
                             isShowingSheet.toggle()
+                            
+                            Task {
+                                await homeViewModel.unlockBox(with: "2557e8b6-73fc-425c-bec1-a2dcf876291b")
+                            }
                         }) {
                             Text("UNLOCK BOX")
                         }

@@ -22,6 +22,8 @@ struct ItemCardView: View {
                 
                 Text("\(item.currentOwnerName)")
                     .font(.system(size: 16, weight: .light))
+                Text("Box ID:" + "\(item.boxId)")
+                    .font(.system(size: 16, weight: .light))
             }
             .padding([.horizontal, .bottom], 10)
         }

@@ -128,7 +128,7 @@ struct ItemsByLocation: Codable, Hashable {
     
     
     func unlockBox(with itemId: String) async { // PUT
-        guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/claim") else { return }
+        guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/pickup") else { return }
 
         let payload: [String: Any] = [
                 "itemId": itemId
