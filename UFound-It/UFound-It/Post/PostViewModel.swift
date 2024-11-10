@@ -10,15 +10,20 @@ import Foundation
 @Observable class PostViewModel {
 
     init() { }
-
+    
+    var post: PostItemResponse?
+    
     func saveLostItem(lostItem: LostItem, imageData: Data) async {
 
-        guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/add") else { return }
+        guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/add") else {
+            print("Invalid URL")
+            return
+        }
 
         let boundary = UUID().uuidString
 
         var request = URLRequest(url: endpointURL)
-        request.httpMethod = "POST" // specify http method
+        request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         // Create multipart body
@@ -31,7 +36,7 @@ import Foundation
         appendFormField(&body, boundary: boundary, name: "description", value: lostItem.description)
         appendFormField(&body, boundary: boundary, name: "additionalNote", value: lostItem.additionalNote)
         appendFormField(&body, boundary: boundary, name: "location", value: lostItem.location)
-        appendFormField(&body, boundary: boundary, name: "boxId", value: String(lostItem.boxId)) // Ensure boxId is a string
+        appendFormField(&body, boundary: boundary, name: "boxId", value: String(lostItem.boxId))
 
         // Append the image data
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -47,7 +52,7 @@ import Foundation
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 else {
-                print("Failed to get response")
+                print("Failed to get response, status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return
             }
 
@@ -61,9 +66,8 @@ import Foundation
             print("Message: \(saveItemResponse.message)")
 
         } catch {
-            print("error: \(error.localizedDescription)")
+            print("Error: \(error.localizedDescription)")
         }
-
     }
 
     private func appendFormField(_ body: inout Data, boundary: String, name: String, value: String) {

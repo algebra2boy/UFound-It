@@ -2,4 +2,6 @@
 /backend/node_modules/
 /backend/.env
 /hardware/config.h
-**/.DS_Store
+/backend/certificates/ufound-tech-ca_bundle.crt
+/backend/certificates/ufound-tech-certificate.crt
+/backend/certificates/ufound-tech-private.key
