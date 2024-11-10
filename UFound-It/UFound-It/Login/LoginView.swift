@@ -36,7 +36,8 @@ struct LoginView: View {
                         verificationCode: $verificationCode,
                         password: $password,
                         isSignInView: $isSigningInView,
-                        buttonAction: login
+                        buttonAction: login,
+                        verfificationButtonAction: {}
                     )
                     .frame(width: 350)
                     

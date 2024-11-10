@@ -31,7 +31,8 @@ struct SignUpView: View {
                         verificationCode: $verificationCode,
                         password: $password,
                         isSignInView: $isSigningInView,
-                        buttonAction: {})
+                        buttonAction: {},
+                        verfificationButtonAction: {})
                     .frame(width: 350)
 
                     HStack {

@@ -16,6 +16,8 @@ struct UserNamePasswordView: View { // Corrected struct name
     
     let buttonAction: () -> Void
     
+    let verfificationButtonAction: () -> Void
+    
     var isSignInButtonDisabled: Bool {
         [email, password].contains(where: \.isEmpty)
     }
@@ -41,6 +43,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                     if isSignInView {
                         Button(action: {
                             // Add action here
+                            verfificationButtonAction()
                         }) {
                             Image(systemName: "paperplane.fill")
                                 .font(.system(size: 16, weight: .medium))
@@ -112,7 +115,7 @@ struct UserNamePasswordView: View { // Corrected struct name
 
 #Preview {
 //    @Previewable @State var descriptionText: String = ""
-    @Previewable @State var isSignInView: Bool = false
+    @Previewable @State var isSignInView: Bool = true
     @Previewable @State var verificationCode: String = "sss"
     @Previewable @State var email: String = "sss"
     @Previewable @State var password: String = "sss"
@@ -120,5 +123,6 @@ struct UserNamePasswordView: View { // Corrected struct name
                          verificationCode: $verificationCode,
                          password: $password,
                          isSignInView: $isSignInView,
-                         buttonAction: {})
+                         buttonAction: {},
+                         verfificationButtonAction: {})
 }
