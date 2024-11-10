@@ -74,28 +74,28 @@ struct BuildingDetailView: View {
             .navigationTitle("\(buildingName)")
             .navigationBarTitleDisplayMode(.inline)
             .presentationDragIndicator(.visible)
-//            .toolbar {
-//                
-//                ToolbarItem(placement: .topBarLeading) {
-//                    Button {
-//                        present.toggle()
-//                    } label: {
-//                        Image(systemName: "xmark")
-//                    }
-//                }
-//                
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    HStack {
-//                        sortMenu
-//                        
-//                        Button {
-//                            navigate()
-//                        } label: {
-//                            Image(systemName: "plus")
-//                        }
-//                    }
-//                }
-//            }
+            .toolbar {
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        present.toggle()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack {
+                        sortMenu
+                        
+                        Button {
+                            navigate()
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
+            }
             .navigationDestination(isPresented: $navigateToPostView, destination: {
                 PostView(buildingName: buildingName)
             })

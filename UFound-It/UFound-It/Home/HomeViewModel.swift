@@ -29,9 +29,7 @@ struct ItemsByLocation: Codable, Hashable {
 @Observable class HomeViewModel {
 
     var boxLocations: [BoxLocation] = []
-
     var boxItemsByLocation: [ItemsByLocation] = []
-
     var selectedLocation: BoxLocation? = nil
 
     init() { }
@@ -87,6 +85,38 @@ struct ItemsByLocation: Codable, Hashable {
 
             print(boxItemsByLocation)
 
+        } catch {
+            print("error: \(error.localizedDescription)")
+        }
+
+    }
+    
+    
+    func changeClaim(with itemID: String, email: String) async { // PUT
+        guard let endpointURL = URL(string: "\(Constants.APIURL)/api/items/claim") else { return }
+
+        let payload: [String: Any] = [
+                "itemID": itemID,
+                "email": email
+            ]
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: payload, options: [])
+            
+            var request = URLRequest(url: endpointURL)
+            request.httpMethod = "PUT"  // Set the request method to PUT
+            request.httpBody = jsonData  // Set the body of the request
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")  // Specify the content type
+
+            let (_, response) = try await URLSession.shared.data(for: request)
+
+            guard response is HTTPURLResponse else {
+                print("Failed to claim the item or invalid response")
+                return
+            }
+            
+            print(response)
+            
         } catch {
             print("error: \(error.localizedDescription)")
         }
