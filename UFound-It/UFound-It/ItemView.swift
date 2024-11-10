@@ -16,6 +16,9 @@ struct ItemView: View {
     @State private var isPressed = false
     @State private var isClaimed = false
     
+    @State private var showingAlert = false
+    @State private var name = ""
+
     var body: some View {
         
         NavigationStack {

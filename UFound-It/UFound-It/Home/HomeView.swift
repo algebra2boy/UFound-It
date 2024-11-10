@@ -10,6 +10,8 @@ import MapKit
 
 struct HomeView: View {
 
+    @State private var homeViewModel: HomeViewModel = .init()
+
     @State private var cameraPosition: MapCameraPosition = .region(.init(
         center: .ILC,
         span: .init(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -19,12 +21,12 @@ struct HomeView: View {
 
     let coordinates: [CLLocationCoordinate2D] = [.ILC, .ISB, .Franklin]
 
-    @State private var presentBottomSheet: Bool = true
+    @State private var presentBottomSheet: Bool = false
 
     var body: some View {
         Map(position: $cameraPosition) {
-            ForEach(coordinates, id: \.self) { coordinate in
-                Annotation("Box", coordinate: coordinate) {
+            ForEach(homeViewModel.boxLocations, id: \.self) { location in
+                Annotation("L&F", coordinate: .init(latitude: location.lat, longitude: location.long)) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 2)
                             .fill(.background)
@@ -34,14 +36,19 @@ struct HomeView: View {
                             .padding(5)
                     }
                     .onTapGesture {
+                        homeViewModel.selectedLocation = location
                         presentBottomSheet.toggle()
                     }
                 }
             }
 
         }
+        .task {
+            await homeViewModel.fetchAllLocations()
+        }
         .sheet(isPresented: $presentBottomSheet) {
-            BuildingDetailView(present: $presentBottomSheet, detent: $currentDetent)
+
+            BuildingDetailView(present: $presentBottomSheet, detent: $currentDetent, buildingName: homeViewModel.selectedLocation?.location ?? "Unknown building")
                 .presentationDetents([.fraction(0.465), .fraction(0.7), .large], selection: $currentDetent)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(20)

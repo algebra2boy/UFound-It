@@ -21,7 +21,9 @@ struct BuildingDetailView: View {
     @Binding var present: Bool
     
     @Binding var detent: PresentationDetent
-    
+
+    var buildingName: String
+
     let data = (1...2).map { "Item \($0)" }
     
     @State private var navigateToItemView: Bool = false
@@ -79,7 +81,7 @@ struct BuildingDetailView: View {
             })
             
             .searchable(text: $searchText, prompt: "Search for lost items")
-            .navigationTitle("Franklin Dining Hall")
+            .navigationTitle("\(buildingName)")
             .navigationBarTitleDisplayMode(.inline)
             .presentationDragIndicator(.visible)
             .toolbar {
@@ -179,7 +181,7 @@ struct BuildingDetailView: View {
     
     @Previewable @State var detent: PresentationDetent = .large
     
-    BuildingDetailView(present: $present, detent: $detent)
+    BuildingDetailView(present: $present, detent: $detent, buildingName: "UMASS")
 }
 
 

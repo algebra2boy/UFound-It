@@ -1,0 +1,94 @@
+.idea/
+/backend/node_modules/
+/backend/.env
+
+# following is for xcode
+# User-specific Xcode settings
+#
+# Xcode creates this directory to store user-specific data such as workspace settings.
+xcuserdata/
+
+# Derived data
+#
+# Xcode generates this directory to store build-related files (indexing, compiled code, etc.)
+DerivedData/
+
+# Xcode-specific build artifacts
+#
+# These directories and files are generated during build and should not be committed.
+build/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playgrounds
+#
+# These are specific to Xcode Playgrounds and shouldn't be tracked.
+timeline.xctimeline
+playground.xcworkspace
+
+# Workspace settings
+#
+# These are user-specific and shouldn't be tracked.
+*.xcuserstate
+
+# Swift Package Manager
+#
+# These directories and files are related to Swift Package Manager and should not be tracked.
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+
+# Carthage
+#
+# If you are using Carthage for dependency management, add the following.
+# The 'Carthage/Build/' directory contains precompiled dependencies.
+Carthage/Build/
+
+# CocoaPods
+#
+# If you use CocoaPods for dependency management, the Pods directory is typically not tracked.
+# Pods/
+# It is recommended to ignore this directory to avoid unnecessary bloat in the repo.
+# If you decide to check in Pods, you should consult CocoaPods documentation for guidelines.
+
+# Fastlane
+#
+# If you use fastlane for automated tasks like screenshots or deployments,
+# it generates some files and directories that should not be tracked.
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# xcworkspace (for CocoaPods or Carthage generated workspaces)
+#
+# If you’re using CocoaPods or Carthage, the `.xcworkspace` is generated automatically
+# and should typically be ignored unless you’ve made modifications to it.
+# If using Xcode Cloud or other shared workflows, this may need to be tracked, but in most cases, it is not.
+*.xcworkspace
+
+# Custom app settings or secrets (always a good practice to ignore)
+#
+# Never store sensitive information such as keys, credentials, or secrets in the repository.
+# .env
+# .env.local
+
+# Documentation outputs
+#
+# Exclude generated documentation files like HTML, PDFs, etc.
+docs/output/
+
+# macOS-specific ignores
+#
+# macOS sometimes creates these files when working with Finder.
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbs.db, a file that Windows sometimes generates when browsing folders.
+Thumbs.db
+
+.DS_Store
