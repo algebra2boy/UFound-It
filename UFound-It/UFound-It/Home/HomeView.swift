@@ -41,7 +41,6 @@ struct HomeView: View {
                     }
                 }
             }
-
         }
         .task {
             await homeViewModel.fetchAllLocations()
