@@ -4,13 +4,11 @@
 //
 //  Created by Main Admin on 11/9/24.
 //
-
 import SwiftUI
 
 struct BuildingDetailView: View {
     
     @State private var searchText: String = ""
-    
     @State private var columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -19,16 +17,36 @@ struct BuildingDetailView: View {
     @State private var navigateToPostView = false
     
     @Binding var present: Bool
-    
     @Binding var detent: PresentationDetent
 
     var buildingName: String
 
-    let data = (1...2).map { "Item \($0)" }
-    
+    let data = (1...20).map { "Item \($0)" }
+
     @State private var navigateToItemView: Bool = false
+    @State private var homeViewModel: HomeViewModel = .init()
+    @State private var sortType: SortType = .none
     
-    //@State private var selectedItem:
+    enum SortType {
+        case none, az, latest, oldest
+    }
+
+    var filteredData: [String] {
+        var result = searchText.isEmpty ? data : data.filter { $0.localizedCaseInsensitiveContains(searchText) }
+        
+        switch sortType {
+        case .az:
+            result.sort(by: { $0 < $1 })
+        case .latest:
+            result.sort(by: { $0 > $1 })
+        case .oldest:
+            result.sort(by: { $0 < $1 })
+        case .none:
+            break
+        }
+        
+        return result
+    }
     
     var body: some View {
         NavigationStack {
@@ -39,7 +57,7 @@ struct BuildingDetailView: View {
                     
                     LazyVGrid(columns: columns, spacing: 20) {
                         
-                        ForEach(data, id: \.self) { item in
+                        ForEach(filteredData, id: \.self) { item in
                             
                             GeometryReader { geometry in
                                 VStack(alignment: .leading, spacing: 10) {
@@ -91,6 +109,7 @@ struct BuildingDetailView: View {
                         present.toggle()
                     } label: {
                         Image(systemName: "xmark")
+                            .tint(Color.UmassRed)
                     }
                 }
                 
@@ -102,6 +121,8 @@ struct BuildingDetailView: View {
                             navigate()
                         } label: {
                             Image(systemName: "plus")
+                                .tint(Color.UmassRed)
+
                         }
                     }
                 }
@@ -116,7 +137,7 @@ struct BuildingDetailView: View {
         Menu {
             
             Button {
-                
+                sortType = .az
             } label: {
                 HStack {
                     Text("A-Z")
@@ -126,21 +147,22 @@ struct BuildingDetailView: View {
             }
             
             Button {
-                
+                sortType = .latest
             } label: {
                 Text("Latest")
             }
             
             Button {
-                
+                sortType = .oldest
             } label: {
                 Text("Oldest")
             }
         } label: {
-            Image(systemName: "arrow.up.arrow.down")
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .tint(Color.UmassRed)
+
         }
     }
-    
     
     @ViewBuilder
     func asyncImage(url: String) -> some View {
@@ -183,5 +205,3 @@ struct BuildingDetailView: View {
     
     BuildingDetailView(present: $present, detent: $detent, buildingName: "UMASS")
 }
-
-

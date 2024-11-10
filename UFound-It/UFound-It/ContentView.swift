@@ -42,6 +42,8 @@ struct ContentView: View {
             }
 
         }
+        .tint(Color.UmassRed)
+
     }
 }
 

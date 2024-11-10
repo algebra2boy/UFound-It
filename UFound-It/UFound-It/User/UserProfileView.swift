@@ -47,7 +47,7 @@ struct UserProfileView: View {
                             VStack {
                                 Text("100")
                                     .font(.system(.headline, weight: .semibold))
-                                Text("You lost")
+                                Text("Unfound")
                                     .font(.footnote)
                             }
                             .frame(width: 80)
@@ -55,7 +55,7 @@ struct UserProfileView: View {
                             VStack {
                                 Text("100")
                                     .font(.system(.headline, weight: .semibold))
-                                Text("Found")
+                                Text("Recovered")
                                     .font(.footnote)
                             }
                             .frame(width: 80)
