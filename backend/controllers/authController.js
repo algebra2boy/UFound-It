@@ -7,6 +7,24 @@ dotenv.config();
 
 const { getDatabase } = require("../config/mongoDB");
 
+const validatePreSignupData = (data) => {
+  return typeof data.to === "string" && data.to.toLowerCase().endsWith("@umass.edu");
+}
+
+const validateSignupData = (data) => {
+  if (typeof data.name !== "string" || data.name.trim() === "") return false;
+  if (typeof data.email !== "string" || !data.email.toLowerCase().endsWith("@umass.edu")) return false;
+  if (typeof data.password !== "string" || data.password.trim() === "") return false;
+  if (typeof data.verificationCode !== "number" || !/^\d{4}$/.test(data.verificationCode.toString())) return false;
+  return true;
+};
+
+const validateLoginData = (data) => {
+  if (typeof data.email !== "string" || !data.email.toLowerCase().endsWith("@umass.edu")) return false;
+  if (typeof data.password !== "string" || data.password.trim() === "") return false;
+  return true;
+}
+
 // Set up the transporter
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -21,6 +39,10 @@ function generateVerificationCode() {
 }
 
 exports.preSignup = async (req, res) => {
+  if (!validatePreSignupData(req.body)) {
+    return res.status(400).json({ status: "fail", message: "Invalid UMass Email" });
+  }
+
   const { to } = req.body;
 
   // Validate required fields
@@ -75,6 +97,10 @@ exports.preSignup = async (req, res) => {
 };
 
 exports.signup = async (req, res) => {
+  if (!validateSignupData(req.body)) {
+    return res.status(400).json({ status: "fail", message: "Invalid request input" });
+  }
+
   const { name, email, password, verificationCode } = req.body;
 
   try {
@@ -119,6 +145,10 @@ exports.signup = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+  if (!validateLoginData(req.body)) {
+    return res.status(400).json({ status: "fail", message: "Invalid request input" });
+  }
+
   const { email, password } = req.body;
 
   try {
