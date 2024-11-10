@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct SignUpView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
 
     @State private var email: String = ""
     @State private var verificationCode: String = ""
     @State private var password: String = ""
     @State private var backgroundImg: String = "background-umass2"
+    @State private var username: String = ""
     
     @State private var isSigningInView: Bool = true
 
@@ -22,7 +24,7 @@ struct SignUpView: View {
 
                 Color.gray.opacity(0.15)
 
-                VStack {
+                ScrollView {
                     AuthHeaderView(backgroundImg: $backgroundImg)
                         .padding()
 
@@ -31,8 +33,9 @@ struct SignUpView: View {
                         verificationCode: $verificationCode,
                         password: $password,
                         isSignInView: $isSigningInView,
-                        buttonAction: {},
-                        verfificationButtonAction: {})
+                        username: $username,
+                        buttonAction: signUp,
+                        verfificationButtonAction: verifyEmail)
                     .frame(width: 350)
 
                     HStack {
@@ -53,8 +56,22 @@ struct SignUpView: View {
             .navigationBarBackButtonHidden()
         }
     }
+    private func signUp() {
+        Task {
+            print("i am signin")
+            await authViewModel.signup(username: username, email: email, verificationCode: Int(verificationCode) ?? 0000, password: password)
+        }
+    }
+    
+    private func verifyEmail() {
+        Task {
+            print("verify code")
+            await authViewModel.verify(email: email)
+        }
+    }
 }
 
 #Preview {
     SignUpView()
+        .environment(AuthViewModel())
 }

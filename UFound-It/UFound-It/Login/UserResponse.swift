@@ -16,6 +16,12 @@ struct UserResponse: Codable {
     let status: String
 }
 
+struct SignUpResponse: Codable {
+    let userId: String
+    let status: String
+    let message: String
+}
+
 struct User: Codable {
     let userId: String
     let name: String

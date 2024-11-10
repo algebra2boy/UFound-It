@@ -11,8 +11,6 @@ import SwiftUI
 struct UserProfileView: View {
 
     @Environment(AuthViewModel.self) var authViewModel
-
-    @State private var username: String = "Username"
     
     var body: some View {
         VStack {
@@ -37,7 +35,7 @@ struct UserProfileView: View {
 //                                .offset(x: 10, y: -10)
                                 }
                                 .padding()
-                        Text(username)
+                        Text("\(authViewModel.user?.name ?? "User")")
                             .font(.title)
                             .fontWeight(.semibold)
                             .foregroundStyle(Color.primary)
@@ -85,7 +83,7 @@ struct UserProfileView: View {
                         HStack {
                             Image(systemName: "envelope.fill")
                                 .foregroundStyle(Color.UmassRed)
-                            Text("useremail@example.com")
+                            Text("\(authViewModel.user?.email ?? "Unknown")")
                                 .font(.body)
                                 .foregroundColor(.black)
                             Spacer()
@@ -141,4 +139,5 @@ struct UserProfileView: View {
 
 #Preview {
     UserProfileView()
+        .environment(AuthViewModel())
 }

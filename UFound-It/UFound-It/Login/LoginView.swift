@@ -12,6 +12,7 @@ struct LoginView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var email: String = ""
+    @State private var username: String = "None"
     @State private var password: String = ""
     @State private var verificationCode: String = ""
 
@@ -36,6 +37,7 @@ struct LoginView: View {
                         verificationCode: $verificationCode,
                         password: $password,
                         isSignInView: $isSigningInView,
+                        username: $username,
                         buttonAction: login,
                         verfificationButtonAction: {}
                     )
@@ -65,7 +67,7 @@ struct LoginView: View {
     private func login() {
         Task {
             print("i am loggining")
-            await authViewModel.login(email: "georgezhang744@umass.edu", password: "12345678")
+            await authViewModel.login(email: email, password: password)
         }
     }
 
