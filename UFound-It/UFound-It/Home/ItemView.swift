@@ -9,6 +9,12 @@ import SwiftUI
 
 struct ItemView: View {
     
+    
+    
+    
+    
+    
+    
     @State private var isShowingSheet = false
     
     @State private var isShowingLock = false

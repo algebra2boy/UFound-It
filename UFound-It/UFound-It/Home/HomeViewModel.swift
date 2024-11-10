@@ -12,7 +12,7 @@ struct BuildingResponse: Codable {
     var status: String
 }
 
-struct ItemsByLocation: Codable {
+struct ItemsByLocation: Codable, Hashable {
     
     var itemId: String
     var name: String
@@ -42,7 +42,7 @@ struct ItemsByLocation: Codable {
         do {
             let (data, response) = try await URLSession.shared.data(from: endpointURL)
             
-            guard let httpResponse = response as? HTTPURLResponse else {
+            guard response is HTTPURLResponse else {
                 print("Failed to get response in fetchAllLocations")
                 return
             }
@@ -79,7 +79,11 @@ struct ItemsByLocation: Codable {
                 return
             }
 
-            boxItemsByLocation = ItemsByLocationResponse.items
+            let filteredItems = ItemsByLocationResponse.items.filter { item in
+                        item.location.lowercased() == name.lowercased()
+                    }
+            
+            boxItemsByLocation = filteredItems
 
             print(boxItemsByLocation)
 
