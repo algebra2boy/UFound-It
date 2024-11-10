@@ -31,8 +31,37 @@ struct BuildingDetailView: View {
     var body: some View {
         NavigationStack {
             
-            GridCard(columns: $columns, navigateToItemView: $navigateToItemView, buildingName: $buildingName, detent: $detent)
-
+            VStack {
+                
+                ScrollView {
+                    
+                    LazyVGrid(columns: columns, spacing: 20) {
+                        
+                        ForEach(homeViewModel.boxItemsByLocation, id: \.self) { item in
+                            
+                            GeometryReader { geometry in
+                                ItemCardView(item: item)
+                                .background(Color.white)
+                                .cornerRadius(15)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .stroke(Color.gray, lineWidth: 0.5)
+                                }
+                                .onTapGesture {
+                                    //selectedItem = item
+                                    navigateToItemView.toggle()
+                                }
+                            }
+                            .frame(height: 200)
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .task {
+                await homeViewModel.fetchByBuilding(with: buildingName)
+            }
+            
             .navigationDestination(isPresented: $navigateToItemView, destination: {
                 if let item = homeViewModel.selectedItem {
                     ItemView(item: item, buildingName: buildingName)
