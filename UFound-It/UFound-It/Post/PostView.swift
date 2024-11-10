@@ -107,26 +107,13 @@ struct PostView: View {
 
                 }
                 VStack(alignment: .leading) {
-                    Text("Ensure that item is in the box and door is closed before submitting.")
+                    Text("Ensure that item is in the box and door is closed before submitting. \(authViewModel.user?.name ?? "Your name") and \(authViewModel.user?.email ?? "your email") will be included in the lost item report.")
                     .font(.headline)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
                     .padding()
 
                 }
-            }
-
-            
-            VStack(alignment: .center) {
-                Text("Contact Details")
-                    .font(.system(size: 17, weight: .bold))
-                    .frame(alignment: .center)
-                Text("Bob Johnson Joe")
-                    .font(.system(size: 15, weight: .light))
-                    .frame(alignment: .center)
-                Text("bobjohnsonjoe@gmail.com")
-                    .font(.system(size: 15, weight: .light))
-
             }
         }
     }
