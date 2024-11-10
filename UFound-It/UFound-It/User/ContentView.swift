@@ -29,6 +29,8 @@ enum AppTab: String, Hashable {
 struct ContentView: View {
 
     @State private var selectedTab: AppTab = .home
+    
+    @State private var authViewModel: AuthViewModel = .init()
 
     var body: some View {
 
@@ -43,6 +45,7 @@ struct ContentView: View {
 
         }
         .tint(.UmassRed)
+        .environment(authViewModel)
     }
 }
 

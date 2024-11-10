@@ -14,6 +14,8 @@ struct UserNamePasswordView: View { // Corrected struct name
     @Binding var password: String
     @Binding var isSignInView: Bool
     
+    let buttonAction: () -> Void
+    
     var isSignInButtonDisabled: Bool {
         [email, password].contains(where: \.isEmpty)
     }
@@ -35,9 +37,10 @@ struct UserNamePasswordView: View { // Corrected struct name
                         .background(Color.white)
                         .cornerRadius(15.0)
                     
-                    if !isSignInView {
+                    if isSignInView {
                         Button(action: {
                             // Add action here
+                            buttonAction()
                         }) {
                             Image(systemName: "paperplane.fill")
                                 .font(.system(size: 16, weight: .medium))
@@ -50,7 +53,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                 }
             }
             
-            if !isSignInView {
+            if isSignInView {
                 VStack(alignment: .leading, spacing: 11) {
                     Text("Verification Code")
                         .font(.system(size: 13, weight: .light))
@@ -116,5 +119,6 @@ struct UserNamePasswordView: View { // Corrected struct name
     UserNamePasswordView(email: $email,
                          verificationCode: $verificationCode,
                          password: $password,
-                         isSignInView: $isSignInView)
+                         isSignInView: $isSignInView,
+                         buttonAction: {})
 }

@@ -42,7 +42,7 @@ struct ClaimSheet: View {
                         isShowingLock.toggle()
                     }
                     Task {
-                        homeViewModel.changeClaim(with: <#T##String#>, email: <#T##String#>)
+//                        homeViewModel.changeClaim(with: String, email: T##String)
                     }
                     
                 }) {
