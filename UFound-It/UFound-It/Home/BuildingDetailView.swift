@@ -48,7 +48,7 @@ struct BuildingDetailView: View {
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 }
                                 .onTapGesture {
-                                    //selectedItem = item
+                                    homeViewModel.selectedItem = item
                                     navigateToItemView.toggle()
                                 }
                             }

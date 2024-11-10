@@ -20,7 +20,7 @@ struct ItemCardView: View {
                 Text("\(item.name)")
                     .font(.system(size: 18, weight: .medium))
                 
-                Text("Posted @ 5:00pm")
+                Text("\(item.currentOwnerName)")
                     .font(.system(size: 16, weight: .light))
             }
             .padding([.horizontal, .bottom], 10)
