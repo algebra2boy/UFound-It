@@ -9,6 +9,9 @@ import Foundation
 import SwiftUI
 
 struct UserProfileView: View {
+
+    @Environment(AuthViewModel.self) var authViewModel
+
     @State private var username: String = "Username"
     
     var body: some View {
@@ -118,7 +121,7 @@ struct UserProfileView: View {
             
             // Sign Out Button
             Button {
-                // TODO: Button ACTION
+                authViewModel.user = nil
                 print("do sign out action")
             } label: {
                 Text("Sign Out")
