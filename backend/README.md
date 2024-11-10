@@ -2,5 +2,5 @@
 
 ```
 sudo docker build -t ufound-it-backend .
-sudo docker run -p 3000:3000 ufound-it-backend
+sudo docker run -p 443:3000 ufound-it-backend
 ```
