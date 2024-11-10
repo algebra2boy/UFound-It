@@ -27,7 +27,17 @@ struct BuildingDetailView: View {
     @State var buildingName: String
 
     @State private var navigateToItemView: Bool = false
-
+    
+    private var filteredItems: [ItemsByLocation] {
+        if searchText.isEmpty {
+            return homeViewModel.boxItemsByLocation
+        } else {
+            return homeViewModel.boxItemsByLocation.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             
@@ -37,7 +47,7 @@ struct BuildingDetailView: View {
                     
                     LazyVGrid(columns: columns, spacing: 20) {
                         
-                        ForEach(homeViewModel.boxItemsByLocation, id: \.self) { item in
+                        ForEach(filteredItems, id: \.self) { item in
                             
                             GeometryReader { geometry in
                                 ItemCardView(item: item)
