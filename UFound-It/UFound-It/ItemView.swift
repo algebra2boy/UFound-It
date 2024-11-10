@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct ItemView: View {
-    @State private var showingAlert = false
-    @State private var name = ""
     
+    @State private var isShowingSheet = false
     
+    @State private var isShowingLock = false
     
+    @State private var isPressed = false
+    @State private var isClaimed = false
     
     var body: some View {
         
@@ -43,15 +45,12 @@ struct ItemView: View {
                             .padding(EdgeInsets(top: 0, leading: 46, bottom: 0, trailing:0))
                         Label("10:00 PM", systemImage: "clock.fill")
                             .padding(EdgeInsets(top: 0, leading: 46, bottom: 0, trailing:0))
-                        
                         Text("Description")
                             .font(.system(size: 19, weight: .medium))
                             .padding()
                         Text("Lorem ipsum dolor sit amet, connect adipiscing elit.")
                             .font(.system(size: 17, weight: .light))
                             .padding([.leading, .trailing], 48)
-                        
-                        
                         Spacer()
                     }
                     .padding([.horizontal, .bottom], 10)
@@ -66,41 +65,87 @@ struct ItemView: View {
                         .frame(alignment: .center)
                     Text("bobjohnsonjoe@gmail.com")
                         .font(.system(size: 15, weight: .light))
-                    
-                    
                 }
-                
             }
             
             .toolbar {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     
-                    Button {
-                        
-                    } label: {
-                        Text("Is This Yours?")
-                    }
-                    .alert("Enter your name", isPresented: $showingAlert) {
-                                TextField("Enter your name", text: $name)
-                                Button("OK", action: submit)
-                            } message: {
-                                Text("Xcode will print whatever you type.")
+                    Button(action: {
+                                isShowingSheet.toggle()
+                            }) {
+                                Text("Is This Yours?")
                             }
-                    
+                            .sheet(isPresented: $isShowingSheet) {
+                                
+                                NavigationStack {
+                                    VStack {
+                                        Text("CLAIM THIS ITEM")
+                                            .font(.title)
+                                        Text("""
+                                            By claiming this item, you ensure that you are the rightful owner, your name and email will be recorded as the new owner. When you tap the claim button, you will have 7 days to unlock the box that contains your item.
+                                            """)
+                                        .padding(40)
+                                        .font(.system(size: 17, weight: .bold))
+                                        .frame(alignment: .center)
+                                        
+                                        Button(action: {
+                                            isPressed = true
+                                            isClaimed.toggle()
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                isPressed = false
+                                                isShowingLock.toggle()
+                                            }
+                                        }) {
+                                            Text(isClaimed ? "UNCLAIM" : "CLAIM")
+                                                .padding(15)
+                                                .frame(width: 200, height: 50)
+                                                .foregroundColor(.white)
+                                                .background(isClaimed ? .gray : .green)
+                                                .cornerRadius(10)
+                                                .scaleEffect(isPressed ? 0.85 : 1.0)
+                                                .opacity(isPressed ? 0.95 : 1.0)
+                                                .animation(.easeInOut(duration: 0.15), value: isPressed)
+                                        }
+                                        .padding(50)
+                                        
+                                        ZStack {
+                                            Spacer().frame(height: 50)
+                                            if isShowingLock {
+                                                Button(action: {
+                                                    isShowingSheet.toggle()
+                                                }) {
+                                                    Text("UNLOCK BOX")
+                                                }
+                                                .padding(15)
+                                                .frame(width: 200, height: 50)
+                                                .foregroundColor(.white)
+                                                .background(.blue)
+                                                .cornerRadius(10)
+                                                .transition(.opacity)
+                                                }
+                                            }
+                                            .animation(.easeInOut(duration: 0.3), value: isShowingLock)
+                                    }
+                                    .toolbar {
+                                        ToolbarItem(placement: .primaryAction) {
+                                            Button("Not Mine",
+                                                   action: { isShowingSheet.toggle() })
+                                            .padding(15)
+                                        }
+                                    }
+                                }
+                                .presentationDragIndicator(.visible)
+                            }
+                                
                 }
             }
-            
-            
         }
     }
 }
 
 
-    
-    func submit() {
-            print("You entered yes")
-        }
     
 @ViewBuilder
 func asyncImage(url: String) -> some View {
