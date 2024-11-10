@@ -147,18 +147,23 @@ exports.searchItems = async (req, res) => {
     const locations = database.collection("Locations");
 
     const items = await locations
-        .aggregate([
-          {
-            $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+      .aggregate([
+        {
+          $unwind: "$boxes", // Deconstructs the `boxes` array so each box becomes a separate document
+        },
+        {
+          $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
+        },
+        {
+          $addFields: {
+            "boxes.item.boxId": { $toInt: "$boxes.boxId" }, // Ensures boxId is an integer
           },
-          {
-            $match: { "boxes.containItem": true }, // Filters for boxes that contain an item
-          },
-          {
-            $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
-          },
-        ])
-        .toArray();
+        },
+        {
+          $replaceRoot: { newRoot: "$boxes.item" }, // Replaces the document root with the `item` field from each box
+        },
+      ])
+      .toArray();
 
     if (!items) {
       return res.status(500).json({
