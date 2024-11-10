@@ -16,9 +16,14 @@ import Foundation
     func login(email: String, password: String) async {
         
         guard let endpointURL = URL(string: "\(Constants.APIURL)/api/auth/login") else { return }
+        
+        var request = URLRequest(url: endpointURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONEncoder().encode(LoginRequest(email: email, password: password))
 
         do {
-            let (data, response) = try await URLSession.shared.data(from: endpointURL)
+            let (data, response) = try await URLSession.shared.data(for: request)
 
             guard response is HTTPURLResponse else {
                 print("Failed to get response in login")
@@ -30,14 +35,13 @@ import Foundation
                 return
             }
             
+            
             user = .init(
                 userId: loginResponse.userId,
                 name: loginResponse.name,
                 email: loginResponse.email,
                 token: loginResponse.token)
             
-            print(user)
-
         } catch {
             print("error: \(error.localizedDescription)")
         }

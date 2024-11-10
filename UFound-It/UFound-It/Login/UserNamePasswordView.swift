@@ -36,11 +36,11 @@ struct UserNamePasswordView: View { // Corrected struct name
                         .padding(.horizontal, 12)
                         .background(Color.white)
                         .cornerRadius(15.0)
+                        .textInputAutocapitalization(.none)
                     
                     if isSignInView {
                         Button(action: {
                             // Add action here
-                            buttonAction()
                         }) {
                             Image(systemName: "paperplane.fill")
                                 .font(.system(size: 16, weight: .medium))
@@ -67,6 +67,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                         .padding(.horizontal, 12)
                         .background(Color.white)
                         .cornerRadius(15.0)
+                        .textInputAutocapitalization(.none)
                 }
             }
             
@@ -85,8 +86,7 @@ struct UserNamePasswordView: View { // Corrected struct name
                     .cornerRadius(15.0)
             }
             Button {
-                // TODO: Button ACTION
-                print("do login action")
+                buttonAction()
             } label: {
                 (isSignInView ? Text("Sign In") : Text("Log In")) // Corrected syntax
                     .font(.title2)

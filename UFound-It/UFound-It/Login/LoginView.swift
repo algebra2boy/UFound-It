@@ -63,7 +63,8 @@ struct LoginView: View {
     
     private func login() {
         Task {
-            await authViewModel.login(email: email, password: password)
+            print("i am loggining")
+            await authViewModel.login(email: "georgezhang744@umass.edu", password: "12345678")
         }
     }
 

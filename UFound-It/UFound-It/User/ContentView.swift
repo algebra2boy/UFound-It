@@ -29,26 +29,38 @@ enum AppTab: String, Hashable {
 struct ContentView: View {
 
     @State private var selectedTab: AppTab = .home
-    
+
     @State private var authViewModel: AuthViewModel = .init()
 
     var body: some View {
 
-        TabView(selection: $selectedTab) {
-            Tab(AppTab.home.title, systemImage: AppTab.home.systemImage, value: AppTab.home) {
-                HomeView()
-            }
+        Group {
 
-            Tab(AppTab.profile.title, systemImage: AppTab.profile.systemImage, value: AppTab.profile) {
-                UserProfileView()
+            if authViewModel.user == nil {
+
+                LoginView()
+
+            } else {
+
+                TabView(selection: $selectedTab) {
+                    Tab(AppTab.home.title, systemImage: AppTab.home.systemImage, value: AppTab.home) {
+                        HomeView()
+                    }
+
+                    Tab(AppTab.profile.title, systemImage: AppTab.profile.systemImage, value: AppTab.profile) {
+                        UserProfileView()
+                    }
+
+                }
+                .tint(.UmassRed)
             }
 
         }
-        .tint(.UmassRed)
         .environment(authViewModel)
     }
 }
 
 #Preview {
     ContentView()
+        .environment(AuthViewModel())
 }
