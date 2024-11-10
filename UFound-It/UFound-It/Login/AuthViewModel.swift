@@ -40,10 +40,10 @@ import Foundation
         }
     }
 
-    func signup(username: String, email: String, verificationCode: Int, password: String) async {
+    func signup(username: String, email: String, verificationCode: Int, password: String) async -> Bool {
         guard let endpointURL = URL(string: "\(Constants.APIURL)/api/auth/signup") else {
             print("Invalid URL")
-            return
+            return false
         }
         
         var request = URLRequest(url: endpointURL)
@@ -57,21 +57,22 @@ import Foundation
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print("Failed to get response in signup with status code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
-                return
+                return false
             }
             
             guard let signupResponse = try? JSONDecoder().decode(SignUpResponse.self, from: data) else {
                 print("Failed to decode signup response")
-                return
+                return false
             }
             
             print("Signup successful: \(signupResponse)")
+            return true  // Indicate success
             
         } catch {
             print("Failed to signup: \(error)")
+            return false
         }
     }
-
     
     func login(email: String, password: String) async {
         

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SignUpView: View {
     @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(\.dismiss) private var dismiss
+
 
     @State private var email: String = ""
     @State private var verificationCode: String = ""
@@ -57,11 +59,17 @@ struct SignUpView: View {
         }
     }
     private func signUp() {
-        Task {
-            print("i am signin")
-            await authViewModel.signup(username: username, email: email, verificationCode: Int(verificationCode) ?? 0000, password: password)
+            Task {
+                print("i am signing up")
+                let isSignUpSuccessful = await authViewModel.signup(username: username, email: email, verificationCode: Int(verificationCode) ?? 0, password: password)
+                
+                if isSignUpSuccessful {
+                    dismiss()
+                } else {
+                    print("Sign up failed")
+                }
+            }
         }
-    }
     
     private func verifyEmail() {
         Task {
