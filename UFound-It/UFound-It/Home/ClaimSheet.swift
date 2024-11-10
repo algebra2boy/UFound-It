@@ -43,7 +43,6 @@ struct ClaimSheet: View {
                     }
                     Task {
                         await homeViewModel.changeClaim(with: "ghigh", and: "8382dd78-ccfd-4878-a124-4563e6d5f1c3", and: "ghigh@umass.edu")
-
                     }
                     
                 }) {
@@ -64,6 +63,10 @@ struct ClaimSheet: View {
                     if isShowingLock {
                         Button(action: {
                             isShowingSheet.toggle()
+                            
+                            Task {
+                                await homeViewModel.unlockBox(with: "2557e8b6-73fc-425c-bec1-a2dcf876291b")
+                            }
                         }) {
                             Text("UNLOCK BOX")
                         }
